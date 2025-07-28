@@ -8,7 +8,7 @@
 </head>
 <body class="bg-white text-gray-800 font-sans">
 
-<!-- TELA PRINCIPAL -->
+<!-- PRINCIPAL -->
 <section id="mainView" class="max-w-md mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow">
   <h1 class="text-2xl font-bold text-blue-600 mb-4 text-center">Pixcom - Sorteio Pix</h1>
   <p class="text-center text-sm mb-2 text-gray-600">Inscreva-se para concorrer a um Pix!</p>
@@ -31,15 +31,15 @@
   <button id="loginButton" class="bg-yellow-500 text-white w-full py-2 rounded font-bold">Entrar</button>
 </section>
 
-<!-- PAINEL ADMIN -->
+<!-- ADMIN -->
 <section id="adminPanel" class="hidden max-w-2xl mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow">
   <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">Painel Admin</h2>
   <div class="flex flex-wrap gap-2 mb-4 justify-center">
     <button id="abrirBtn" class="bg-green-500 text-white px-4 py-2 rounded">🔓 Abrir Sorteio</button>
     <button id="encerrarBtn" class="bg-yellow-500 text-white px-4 py-2 rounded">🔒 Encerrar</button>
     <button id="sortearBtn" class="bg-purple-600 text-white px-4 py-2 rounded">🎯 Sortear</button>
-    <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded">Sair</button>
     <button id="voltarBtn" class="bg-gray-500 text-white px-4 py-2 rounded">⬅️ Voltar</button>
+    <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded">Sair</button>
   </div>
 
   <label class="block text-sm text-gray-700 mt-4 mb-1">Definir encerramento:</label>
@@ -75,80 +75,92 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const mainView = document.getElementById("mainView");
-const loginView = document.getElementById("loginView");
-const adminPanel = document.getElementById("adminPanel");
-const encerramentoInput = document.getElementById("encerramentoInput");
+const userId = localStorage.getItem("userId") || Math.random().toString(36).substring(2, 10);
+localStorage.setItem("userId", userId);
+document.getElementById("userIdDisplay").textContent = userId;
 
 function showView(view) {
   document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
   view.classList.remove("hidden");
 }
 
-const userId = localStorage.getItem("userId") || Math.random().toString(36).substring(2, 10);
-localStorage.setItem("userId", userId);
-document.getElementById("userIdDisplay").textContent = userId;
-
-// EVENTOS GERAIS
-document.getElementById("adminLink").onclick = e => {
-  e.preventDefault();
-  showView(loginView);
+document.getElementById("adminLink").onclick = e => { e.preventDefault(); showView(loginView); };
+document.getElementById("loginButton").onclick = async () => {
+  const email = adminEmail.value;
+  const pass = adminPassword.value;
+  try { await signInWithEmailAndPassword(auth, email, pass); } catch (e) { alert("Erro: " + e.message); }
 };
 document.getElementById("logoutButton").onclick = () => signOut(auth);
 document.getElementById("voltarBtn").onclick = () => showView(mainView);
 
-// AUTENTICAÇÃO
-document.getElementById("loginButton").onclick = async () => {
-  const email = adminEmail.value;
-  const pass = adminPassword.value;
-  try {
-    await signInWithEmailAndPassword(auth, email, pass);
-  } catch (e) {
-    alert("Erro: " + e.message);
-  }
-};
-
-// FIREBASE AUTH MONITOR
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     showView(adminPanel);
-    carregarParticipantesAdmin();
-    carregarGanhador();
-    carregarEncerramento();
-
-    // ✅ Botões admin após login
-    document.getElementById("abrirBtn").onclick = async () => {
-      await updateDoc(doc(db, "sorteio", "status"), { ativo: true });
-      alert("Sorteio aberto!");
-    };
-    document.getElementById("encerrarBtn").onclick = async () => {
-      await updateDoc(doc(db, "sorteio", "status"), { ativo: false });
-      alert("Sorteio encerrado!");
-    };
-    document.getElementById("sortearBtn").onclick = async () => {
-      const snap = await getDocs(collection(db, "participantes"));
-      const lista = snap.docs;
-      if (lista.length === 0) return alert("Sem participantes!");
-      const ganhador = lista[Math.floor(Math.random() * lista.length)].data();
-      await setDoc(doc(db, "sorteio", "ganhador"), ganhador);
-      carregarGanhador();
-      alert("Ganhador sorteado!");
-    };
-    document.getElementById("salvarHorario").onclick = async () => {
-      const valor = encerramentoInput.value;
-      if (!valor) return alert("Escolha uma data e hora.");
-      await updateDoc(doc(db, "sorteio", "status"), { encerramento: valor });
-      alert("Encerramento salvo!");
-    };
-
+    carregarParticipantesAdmin(); carregarGanhador(); carregarEncerramento();
   } else {
     showView(mainView);
-    verificarStatus();
-    carregarEncerramento();
+    verificarStatus(); carregarEncerramento();
   }
 });
 
-// PARTICIPANTE
+async function verificarStatus() {
+  try {
+    const docSnap = await getDoc(doc(db, "sorteio", "status"));
+    const data = docSnap.data() || {};
+    const status = data.ativo === true;
+    document.getElementById("statusText").textContent = status ? "Inscrições Abertas" : "Inscrições Encerradas";
+    return status;
+  } catch (e) {
+    console.error("Erro ao verificar status:", e);
+    document.getElementById("statusText").textContent = "Erro ao carregar status";
+    return false;
+  }
+}
+
+async function carregarEncerramento() {
+  const snap = await getDoc(doc(db, "sorteio", "status"));
+  const el = document.getElementById("encerramentoText");
+  if (snap.exists() && snap.data().encerramento) {
+    const data = new Date(snap.data().encerramento);
+    el.textContent = data.toLocaleString("pt-BR");
+    encerramentoInput.value = snap.data().encerramento;
+    iniciarRelogio(data);
+  } else {
+    el.textContent = "Não definido.";
+  }
+}
+
+function iniciarRelogio(dataEncerramento) {
+  const statusDoc = doc(db, "sorteio", "status");
+  const interval = setInterval(async () => {
+    const agora = new Date();
+    if (agora >= dataEncerramento) {
+      clearInterval(interval);
+      await updateDoc(statusDoc, { ativo: false });
+      document.getElementById("statusText").textContent = "Inscrições Encerradas";
+    }
+  }, 1000);
+}
+
+document.getElementById("abrirBtn").onclick = () => updateDoc(doc(db, "sorteio", "status"), { ativo: true });
+document.getElementById("encerrarBtn").onclick = () => updateDoc(doc(db, "sorteio", "status"), { ativo: false });
+document.getElementById("salvarHorario").onclick = () => {
+  const valor = encerramentoInput.value;
+  if (!valor) return alert("Escolha uma data e hora.");
+  updateDoc(doc(db, "sorteio", "status"), { encerramento: valor });
+  alert("Encerramento salvo!");
+};
+
+document.getElementById("sortearBtn").onclick = async () => {
+  const snap = await getDocs(collection(db, "participantes"));
+  const lista = snap.docs;
+  if (lista.length === 0) return alert("Sem participantes!");
+  const ganhador = lista[Math.floor(Math.random() * lista.length)].data();
+  await setDoc(doc(db, "sorteio", "ganhador"), ganhador);
+  carregarGanhador();
+  alert("Ganhador sorteado!");
+};
+
 document.getElementById("registerButton").onclick = async () => {
   const ativo = await verificarStatus();
   if (!ativo) return alert("Inscrições encerradas!");
@@ -161,7 +173,6 @@ document.getElementById("registerButton").onclick = async () => {
   alert("Inscrição realizada!");
 };
 
-// LISTAGEM
 onSnapshot(collection(db, "participantes"), snap => {
   const ul = document.getElementById("participantsList");
   const load = document.getElementById("loadingParticipants");
@@ -190,39 +201,6 @@ async function carregarGanhador() {
     const g = docSnap.data();
     document.getElementById("ganhadorText").textContent = `${g.instagram} (${g.chavePix})`;
   }
-}
-
-async function verificarStatus() {
-  const statusSnap = await getDoc(doc(db, "sorteio", "status"));
-  const ativo = statusSnap.exists() && statusSnap.data().ativo === true;
-  document.getElementById("statusText").textContent = ativo ? "Inscrições Abertas" : "Inscrições Encerradas";
-  return ativo;
-}
-
-async function carregarEncerramento() {
-  const snap = await getDoc(doc(db, "sorteio", "status"));
-  const dado = snap.exists() ? snap.data().encerramento : null;
-  const el = document.getElementById("encerramentoText");
-  if (dado) {
-    const hora = new Date(dado);
-    el.textContent = hora.toLocaleString("pt-BR");
-    encerramentoInput.value = dado;
-    iniciarRelogio(hora);
-  } else {
-    el.textContent = "Não definido.";
-  }
-}
-
-function iniciarRelogio(dataEncerramento) {
-  const statusDoc = doc(db, "sorteio", "status");
-  const interval = setInterval(async () => {
-    const agora = new Date();
-    if (agora >= new Date(dataEncerramento)) {
-      clearInterval(interval);
-      await updateDoc(statusDoc, { ativo: false });
-      document.getElementById("statusText").textContent = "Inscrições Encerradas";
-    }
-  }, 1000);
 }
 </script>
 </body>
