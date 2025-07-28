@@ -33,7 +33,7 @@
   <div class="max-w-md mx-auto bg-gray-800 p-6 rounded-lg shadow mt-10 text-center">
     <h1 class="text-2xl font-bold text-pink-400 mb-4">Pixcom - Sorteio Pix Instagram!</h1>
     <p class="text-gray-300 mb-4">Inscreva-se para participar e ganhar um Pix!</p>
-    <p class="mb-4 font-semibold">Status: <span class="text-yellow-400" id="statusText">Inscrições Abertas</span></p>
+    <p class="mb-4 font-semibold">Status: <span class="text-yellow-400">Inscrições Abertas</span></p>
     <input type="text" id="instagramHandle" class="input-field" placeholder="@seuinstagram">
     <input type="text" id="pixKey" class="input-field" placeholder="Chave Pix">
     <button id="registerButton" class="btn">Quero Participar!</button>
@@ -76,20 +76,23 @@
   </div>
 </section>
 
-<!-- FIREBASE E APP -->
+<!-- FIREBASE -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
   import { getFirestore, doc, setDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_DOMINIO.firebaseapp.com",
-    projectId: "SEU_PROJETO",
-    storageBucket: "SEU_PROJETO.appspot.com",
-    messagingSenderId: "SEU_SENDER_ID",
-    appId: "SEU_APP_ID"
+    apiKey: "AIzaSyDZ2jr8QhV2p4IgcN2x-_fKBv3yeH7mUQU",
+    authDomain: "smart-5a1c5.firebaseapp.com",
+    projectId: "smart-5a1c5",
+    storageBucket: "smart-5a1c5.appspot.com",
+    messagingSenderId: "138657213190",
+    appId: "1:138657213190:web:1652d65b2d6b2d7aefcc87",
+    measurementId: "G-6PH9PD3FF5"
   };
+
+  const ADMIN_UID = "mv0x6ktWwfZHsIKotKnmrW9RQsY2"; // Substitua se necessário
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -104,10 +107,26 @@
     v.classList.remove("hidden");
   };
 
-  document.getElementById("adminLink").addEventListener("click", (e) => {
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const isAdmin = user.uid === ADMIN_UID;
+      document.getElementById("userIdDisplay").textContent = user.uid;
+      showView(isAdmin ? adminPanel : mainView);
+      if (isAdmin) carregarParticipantesAdmin();
+    } else {
+      try {
+        const anon = await signInAnonymously(auth);
+        document.getElementById("userIdDisplay").textContent = anon.user.uid;
+      } catch (e) {
+        alert("Erro ao logar anonimamente");
+      }
+    }
+  });
+
+  document.getElementById("adminLink").onclick = (e) => {
     e.preventDefault();
     showView(loginView);
-  });
+  };
 
   document.getElementById("loginButton").onclick = async () => {
     const email = document.getElementById("adminEmail").value;
@@ -121,26 +140,21 @@
 
   document.getElementById("logoutButton").onclick = () => signOut(auth);
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      showView(adminPanel);
-      carregarParticipantesAdmin();
-    } else {
-      showView(mainView);
-    }
-  });
-
-  const userId = crypto.randomUUID();
-  document.getElementById("userIdDisplay").textContent = userId;
-
   document.getElementById("registerButton").onclick = async () => {
     const instagram = document.getElementById("instagramHandle").value.trim();
     const chavePix = document.getElementById("pixKey").value.trim();
-    if (!instagram || !chavePix) return alert("Preencha todos os campos!");
-    await setDoc(doc(db, "participantes", userId), {
-      instagram, chavePix, data: new Date().toISOString()
-    });
-    alert("Inscrição confirmada!");
+    const userId = auth.currentUser?.uid;
+    if (!instagram || !chavePix || !userId) return alert("Preencha todos os campos!");
+    try {
+      await setDoc(doc(db, "participantes", userId), {
+        instagram,
+        chavePix,
+        data: new Date().toISOString()
+      });
+      alert("Inscrição confirmada!");
+    } catch (e) {
+      alert("Erro ao salvar: " + e.message);
+    }
   };
 
   const carregarParticipantes = () => {
@@ -169,7 +183,6 @@
   };
 
   document.getElementById("toggleStatusBtn").onclick = carregarParticipantesAdmin;
-
   carregarParticipantes();
 </script>
 
