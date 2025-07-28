@@ -28,7 +28,6 @@
 </head>
 <body class="bg-gray-900 text-white font-sans">
 
-<!-- VIEW PRINCIPAL -->
 <section id="mainView">
   <div class="max-w-md mx-auto bg-gray-800 p-6 rounded-lg shadow mt-10 text-center">
     <h1 class="text-2xl font-bold text-pink-400 mb-4">Pixcom - Sorteio Pix Instagram!</h1>
@@ -37,16 +36,14 @@
     <input type="text" id="instagramHandle" class="input-field" placeholder="@seuinstagram">
     <input type="text" id="pixKey" class="input-field" placeholder="Chave Pix">
     <button id="registerButton" class="btn">Quero Participar!</button>
-    <div class="mt-6">
-      <h2 class="text-xl font-bold text-green-400">Ganhador</h2>
-      <p id="winnerDisplay" class="text-lg mt-2 text-yellow-300"></p>
-    </div>
+    <h2 class="text-xl mt-6 mb-2 font-bold text-green-400">Participantes</h2>
+    <ul id="participantsList" class="mb-2 hidden"></ul>
+    <p id="loadingParticipants">Carregando participantes...</p>
     <p class="text-sm text-gray-400 mt-2">Seu ID: <span id="userIdDisplay"></span></p>
     <a href="#" id="adminLink" class="text-blue-400 text-sm mt-2 inline-block">Acesso Admin</a>
   </div>
 </section>
 
-<!-- VIEW LOGIN -->
 <section id="loginView" class="hidden">
   <div class="max-w-md mx-auto bg-gray-800 p-6 rounded-lg shadow mt-10">
     <h2 class="text-xl font-bold text-yellow-400 text-center mb-4">Login do Admin</h2>
@@ -56,160 +53,160 @@
   </div>
 </section>
 
-<!-- VIEW ADMIN -->
 <section id="adminPanel" class="hidden">
   <div class="max-w-xl mx-auto bg-gray-800 p-6 rounded-lg shadow mt-10">
     <h2 class="text-2xl font-bold text-yellow-300 mb-4 text-center">Painel de Administração</h2>
-    <div class="grid grid-cols-2 gap-2 mb-4">
-      <button id="openDrawBtn" class="btn">Abrir Sorteio</button>
-      <button id="closeDrawBtn" class="bg-red-600 btn">Encerrar Sorteio</button>
-      <button id="drawWinnerBtn" class="bg-green-600 btn col-span-2">Sortear Ganhador</button>
-      <button id="logoutButton" class="bg-gray-600 btn col-span-2">Sair</button>
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button id="abrirBtn" class="btn w-full sm:w-auto">🔓 Abrir Sorteio</button>
+      <button id="encerrarBtn" class="btn w-full sm:w-auto bg-yellow-500">🔒 Encerrar Sorteio</button>
+      <button id="sortearBtn" class="btn w-full sm:w-auto bg-green-600">🎉 Sortear Ganhador</button>
+      <button id="logoutButton" class="btn w-full sm:w-auto bg-red-600">Sair</button>
     </div>
-    <h3 class="text-lg font-bold text-green-300 mt-4 mb-2">Participantes</h3>
-    <table class="w-full text-sm text-left text-gray-200">
-      <thead>
-        <tr><th>@ Instagram</th><th>Chave Pix</th></tr>
-      </thead>
+    <h3 class="text-lg font-bold text-green-300 mt-6 mb-2">Participantes</h3>
+    <table class="w-full text-sm table-auto text-left text-gray-200">
+      <thead><tr><th>@ Instagram</th><th>Chave Pix</th></tr></thead>
       <tbody id="adminParticipantsList"></tbody>
     </table>
+    <h3 class="text-lg font-bold text-yellow-400 mt-6 mb-2">🎯 Ganhador</h3>
+    <p id="ganhadorText" class="text-white">Nenhum ainda.</p>
   </div>
 </section>
 
-<!-- FIREBASE + APP -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBKlVI23YoxRb1fntQKy-ZfkzaDM-MWsSQ",
-    authDomain: "doce-sabor-caseiro.firebaseapp.com",
-    projectId: "doce-sabor-caseiro",
-    storageBucket: "doce-sabor-caseiro.appspot.com",
-    messagingSenderId: "414062499771",
-    appId: "1:414062499771:web:1a811377bc6bbf145f969e"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyDZ2jr8QhV2p4IgcN2x-_fKBv3yeH7mUQU",
+  authDomain: "smart-5a1c5.firebaseapp.com",
+  projectId: "smart-5a1c5",
+  storageBucket: "smart-5a1c5.appspot.com",
+  messagingSenderId: "138657213190",
+  appId: "1:138657213190:web:1652d65b2d6b2d7aefcc87"
+};
 
-  const ADMIN_UID = "mv0x6ktWwfZHsIKotKnmrW9RQsY2";
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+const mainView = document.getElementById("mainView");
+const loginView = document.getElementById("loginView");
+const adminPanel = document.getElementById("adminPanel");
 
-  const mainView = document.getElementById("mainView");
-  const loginView = document.getElementById("loginView");
-  const adminPanel = document.getElementById("adminPanel");
+const showView = (v) => {
+  [mainView, loginView, adminPanel].forEach(el => el.classList.add("hidden"));
+  v.classList.remove("hidden");
+};
 
-  const showView = (v) => {
-    [mainView, loginView, adminPanel].forEach(el => el.classList.add("hidden"));
-    v.classList.remove("hidden");
-  };
+document.getElementById("adminLink").onclick = e => {
+  e.preventDefault();
+  showView(loginView);
+};
 
-  const userId = localStorage.getItem("userId") || crypto.randomUUID();
-  localStorage.setItem("userId", userId);
-  document.getElementById("userIdDisplay").textContent = userId;
+document.getElementById("loginButton").onclick = async () => {
+  const email = document.getElementById("adminEmail").value;
+  const password = document.getElementById("adminPassword").value;
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (e) {
+    alert("Erro: " + e.message);
+  }
+};
 
-  // Autenticação
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      if (user.uid === ADMIN_UID) {
-        showView(adminPanel);
-        carregarParticipantesAdmin();
-      } else {
-        showView(mainView);
-      }
-    } else {
-      await signInAnonymously(auth);
-    }
-    atualizarStatus();
-    mostrarGanhador();
-  });
+document.getElementById("logoutButton").onclick = () => signOut(auth);
 
-  document.getElementById("adminLink").onclick = (e) => {
-    e.preventDefault();
-    showView(loginView);
-  };
+onAuthStateChanged(auth, async user => {
+  if (user && user.emailVerified !== false) {
+    showView(adminPanel);
+    carregarParticipantesAdmin();
+    carregarGanhador();
+  } else {
+    showView(mainView);
+  }
+});
 
-  document.getElementById("loginButton").onclick = async () => {
-    try {
-      await signInWithEmailAndPassword(auth,
-        document.getElementById("adminEmail").value,
-        document.getElementById("adminPassword").value
-      );
-    } catch (e) {
-      alert("Erro no login: " + e.message);
-    }
-  };
+// ID único local
+const savedId = localStorage.getItem("userId") || Math.random().toString(36).substring(2, 9);
+localStorage.setItem("userId", savedId);
+document.getElementById("userIdDisplay").textContent = savedId;
 
-  document.getElementById("logoutButton").onclick = () => signOut(auth);
+// STATUS do sorteio
+async function verificarStatus() {
+  const docSnap = await getDoc(doc(db, "sorteio", "status"));
+  const status = docSnap.exists() && docSnap.data().ativo === true;
+  document.getElementById("statusText").textContent = status ? "Inscrições Abertas" : "Inscrições Encerradas";
+  return status;
+}
+verificarStatus();
 
-  // Inscrição
-  document.getElementById("registerButton").onclick = async () => {
-    const insta = document.getElementById("instagramHandle").value.trim();
-    const chave = document.getElementById("pixKey").value.trim();
-    const statusDoc = await getDoc(doc(db, "sorteio", "status"));
-    if (!statusDoc.exists() || !statusDoc.data().aberto) {
-      return alert("O sorteio está encerrado.");
-    }
-    if (!insta || !chave) return alert("Preencha todos os campos!");
-    await setDoc(doc(db, "participantes", userId), {
-      instagram: insta,
-      chavePix: chave,
-      data: new Date().toISOString()
+// Registrar participante
+document.getElementById("registerButton").onclick = async () => {
+  const status = await verificarStatus();
+  if (!status) return alert("Inscrições encerradas.");
+  const instagram = document.getElementById("instagramHandle").value.trim();
+  const pix = document.getElementById("pixKey").value.trim();
+  if (!instagram || !pix) return alert("Preencha os campos.");
+  try {
+    await setDoc(doc(db, "participantes", savedId), {
+      instagram, chavePix: pix, data: new Date().toISOString()
     });
     alert("Inscrição confirmada!");
-  };
-
-  // Status
-  async function atualizarStatus() {
-    const statusDoc = await getDoc(doc(db, "sorteio", "status"));
-    const aberto = statusDoc.exists() && statusDoc.data().aberto;
-    document.getElementById("statusText").textContent = aberto ? "Inscrições Abertas" : "Encerradas";
+  } catch (e) {
+    alert("Erro ao salvar: " + e.message);
   }
+};
 
-  // Admin: Abrir/Encerrar
-  document.getElementById("openDrawBtn").onclick = async () => {
-    await setDoc(doc(db, "sorteio", "status"), { aberto: true });
-    alert("Sorteio aberto!");
-  };
-  document.getElementById("closeDrawBtn").onclick = async () => {
-    await setDoc(doc(db, "sorteio", "status"), { aberto: false });
-    alert("Sorteio encerrado!");
-  };
+// Listagem pública
+onSnapshot(collection(db, "participantes"), snapshot => {
+  const ul = document.getElementById("participantsList");
+  const loading = document.getElementById("loadingParticipants");
+  ul.innerHTML = "";
+  snapshot.forEach(doc => {
+    const li = document.createElement("li");
+    li.textContent = doc.data().instagram;
+    ul.appendChild(li);
+  });
+  ul.classList.remove("hidden");
+  loading.style.display = "none";
+});
 
-  // Admin: Sortear
-  document.getElementById("drawWinnerBtn").onclick = async () => {
-    const snapshot = await getDocs(collection(db, "participantes"));
-    const docs = snapshot.docs;
-    if (!docs.length) return alert("Nenhum participante!");
-    const sorteado = docs[Math.floor(Math.random() * docs.length)].data();
-    await setDoc(doc(db, "sorteio", "ganhador"), sorteado);
-    alert(`Ganhador sorteado: ${sorteado.instagram}`);
-    mostrarGanhador();
-  };
+// Admin
+async function carregarParticipantesAdmin() {
+  const snap = await getDocs(collection(db, "participantes"));
+  const tbody = document.getElementById("adminParticipantsList");
+  tbody.innerHTML = "";
+  snap.forEach(doc => {
+    const p = doc.data();
+    tbody.innerHTML += `<tr><td>${p.instagram}</td><td>${p.chavePix}</td></tr>`;
+  });
+}
 
-  // Exibir ganhador
-  async function mostrarGanhador() {
-    const docG = await getDoc(doc(db, "sorteio", "ganhador"));
-    if (docG.exists()) {
-      const g = docG.data();
-      document.getElementById("winnerDisplay").textContent = `@${g.instagram} - ${g.chavePix}`;
-    }
+async function carregarGanhador() {
+  const docSnap = await getDoc(doc(db, "sorteio", "ganhador"));
+  if (docSnap.exists()) {
+    const d = docSnap.data();
+    document.getElementById("ganhadorText").textContent = `${d.instagram} (${d.chavePix})`;
   }
+}
 
-  // Listagem
-  function carregarParticipantesAdmin() {
-    const tbody = document.getElementById("adminParticipantsList");
-    onSnapshot(collection(db, "participantes"), (snapshot) => {
-      tbody.innerHTML = "";
-      snapshot.forEach(doc => {
-        const d = doc.data();
-        tbody.innerHTML += `<tr><td>${d.instagram}</td><td>${d.chavePix}</td></tr>`;
-      });
-    });
-  }
+document.getElementById("abrirBtn").onclick = () => {
+  updateDoc(doc(db, "sorteio", "status"), { ativo: true });
+  alert("Sorteio aberto!");
+};
+document.getElementById("encerrarBtn").onclick = () => {
+  updateDoc(doc(db, "sorteio", "status"), { ativo: false });
+  alert("Sorteio encerrado!");
+};
+document.getElementById("sortearBtn").onclick = async () => {
+  const snap = await getDocs(collection(db, "participantes"));
+  const docs = snap.docs;
+  if (docs.length === 0) return alert("Nenhum participante.");
+  const escolhido = docs[Math.floor(Math.random() * docs.length)].data();
+  await setDoc(doc(db, "sorteio", "ganhador"), escolhido);
+  alert("Ganhador sorteado!");
+  carregarGanhador();
+};
 </script>
-
 </body>
 </html>
