@@ -5,6 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pixcom - Sorteio Pix</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .pulse-btn {
+      background: #22c55e;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      border-radius: 4px;
+      font-weight: bold;
+      animation: pulse 2s infinite;
+      transition: background 0.3s;
+    }
+
+    .pulse-btn:hover {
+      background: #16a34a;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(34,197,94, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(34,197,94, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(34,197,94, 0); }
+    }
+  </style>
 </head>
 <body class="bg-white text-gray-800 font-sans">
 
@@ -12,12 +34,12 @@
 <section id="mainView" class="max-w-md mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow">
   <h1 class="text-2xl font-bold text-blue-600 mb-4 text-center">Pixcom - Sorteio Pix</h1>
   <p class="text-center text-sm mb-2 text-gray-600">Inscreva-se para concorrer a um Pix!</p>
-  <p class="text-center font-semibold text-yellow-600 mb-2">Status: <span id="statusText">Carregando...</span></p>
-  <p class="text-center text-sm text-red-600 mb-4">Tempo restante: <span id="countdown">--:--</span></p>
+  <p class="text-center font-semibold text-yellow-600 mb-4">Status: <span id="statusText">Carregando...</span></p>
+  <p class="text-center text-sm mb-4 text-red-600">Tempo restante: <span id="countdown">--:--</span></p>
 
   <input type="text" id="instagramHandle" class="border p-2 w-full rounded mb-2" placeholder="@seuInstagram" />
   <input type="text" id="pixKey" class="border p-2 w-full rounded mb-2" placeholder="Chave Pix" />
-  <button id="registerButton" class="bg-blue-500 hover:bg-blue-600 text-white w-full py-2 rounded mb-4 font-bold">Quero Participar</button>
+  <button id="registerButton" class="pulse-btn">Quero Participar</button>
 
   <h2 class="text-lg font-bold text-green-600 mt-4">Participantes</h2>
   <ul id="participantsList" class="text-sm mb-2"></ul>
@@ -42,7 +64,7 @@
     <button id="abrirBtn" class="bg-green-500 text-white px-4 py-2 rounded">🔓 Abrir Sorteio</button>
     <button id="encerrarBtn" class="bg-yellow-500 text-white px-4 py-2 rounded">🔒 Encerrar</button>
     <button id="sortearBtn" class="bg-purple-600 text-white px-4 py-2 rounded">🎯 Sortear</button>
-    <button id="voltarBtn" class="bg-gray-500 text-white px-4 py-2 rounded">↩️ Voltar</button>
+    <button id="voltarBtn" class="bg-gray-500 text-white px-4 py-2 rounded">Voltar</button>
     <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded">Sair</button>
   </div>
 
@@ -71,6 +93,8 @@ const firebaseConfig = {
   appId: "1:138657213190:web:1652d65b2d6b2d7aefcc87"
 };
 
+const ENCERRAMENTO = new Date("2025-07-30T23:59:00-03:00"); // ⏰ Ajuste a data e hora aqui!
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -84,8 +108,9 @@ const userId = localStorage.getItem("userId") || Math.random().toString(36).subs
 localStorage.setItem("userId", userId);
 document.getElementById("userIdDisplay").textContent = userId;
 
+// Views
 onAuthStateChanged(auth, async (user) => {
-  if (user && user.emailVerified !== false) {
+  if (user) {
     showView(document.getElementById("adminPanel"));
     carregarParticipantesAdmin();
     carregarGanhador();
@@ -98,7 +123,6 @@ document.getElementById("adminLink").onclick = e => {
   e.preventDefault();
   showView(document.getElementById("loginView"));
 };
-
 document.getElementById("loginButton").onclick = async () => {
   const email = adminEmail.value;
   const pass = adminPassword.value;
@@ -108,18 +132,19 @@ document.getElementById("loginButton").onclick = async () => {
     alert("Erro: " + e.message);
   }
 };
-
 document.getElementById("logoutButton").onclick = () => signOut(auth);
 document.getElementById("voltarBtn").onclick = () => showView(document.getElementById("mainView"));
 
+// Status
 async function verificarStatus() {
-  const statusSnap = await getDoc(doc(db, "sorteio", "status"));
-  const status = statusSnap.exists() && statusSnap.data().ativo === true;
-  document.getElementById("statusText").textContent = status ? "Inscrições Abertas" : "Inscrições Encerradas";
-  return status;
+  const snap = await getDoc(doc(db, "sorteio", "status"));
+  const ativo = snap.exists() && snap.data().ativo === true;
+  document.getElementById("statusText").textContent = ativo ? "Inscrições Abertas" : "Inscrições Encerradas";
+  return ativo;
 }
 verificarStatus();
 
+// Registro
 document.getElementById("registerButton").onclick = async () => {
   const ativo = await verificarStatus();
   if (!ativo) return alert("Inscrições encerradas!");
@@ -129,12 +154,13 @@ document.getElementById("registerButton").onclick = async () => {
   await setDoc(doc(db, "participantes", userId), {
     instagram, chavePix: pix, data: new Date().toISOString()
   });
-  alert("✅ Inscrição confirmada!");
+  alert("Inscrição confirmada!");
 };
 
+// Listagem
 onSnapshot(collection(db, "participantes"), snap => {
   const ul = document.getElementById("participantsList");
-  const load = document.getElementById("loadingParticipants");
+  const loading = document.getElementById("loadingParticipants");
   ul.innerHTML = "";
   snap.forEach(doc => {
     const li = document.createElement("li");
@@ -142,9 +168,10 @@ onSnapshot(collection(db, "participantes"), snap => {
     ul.appendChild(li);
   });
   ul.classList.remove("hidden");
-  load.style.display = "none";
+  loading.style.display = "none";
 });
 
+// Admin
 async function carregarParticipantesAdmin() {
   const snap = await getDocs(collection(db, "participantes"));
   const tbody = document.getElementById("adminParticipantsList");
@@ -154,7 +181,6 @@ async function carregarParticipantesAdmin() {
     tbody.innerHTML += `<tr><td>${p.instagram}</td><td>${p.chavePix}</td></tr>`;
   });
 }
-
 async function carregarGanhador() {
   const docSnap = await getDoc(doc(db, "sorteio", "ganhador"));
   if (docSnap.exists()) {
@@ -162,53 +188,36 @@ async function carregarGanhador() {
     document.getElementById("ganhadorText").textContent = `${g.instagram} (${g.chavePix})`;
   }
 }
-
-document.getElementById("abrirBtn").onclick = async () => {
-  const tempo = prompt("Digite o tempo de inscrição em minutos:");
-  if (!tempo || isNaN(tempo)) return alert("Tempo inválido.");
-  const agora = new Date();
-  const encerramento = new Date(agora.getTime() + parseInt(tempo) * 60000);
-  await updateDoc(doc(db, "sorteio", "status"), {
-    ativo: true,
-    encerramento: encerramento.toISOString()
-  });
-  alert(`Sorteio aberto por ${tempo} minutos.`);
+document.getElementById("abrirBtn").onclick = () => {
+  updateDoc(doc(db, "sorteio", "status"), { ativo: true });
+  alert("Sorteio aberto!");
 };
-
 document.getElementById("encerrarBtn").onclick = () => {
   updateDoc(doc(db, "sorteio", "status"), { ativo: false });
   alert("Sorteio encerrado.");
 };
-
 document.getElementById("sortearBtn").onclick = async () => {
   const snap = await getDocs(collection(db, "participantes"));
-  const lista = snap.docs;
-  if (lista.length === 0) return alert("Sem participantes!");
-  const ganhador = lista[Math.floor(Math.random() * lista.length)].data();
-  await setDoc(doc(db, "sorteio", "ganhador"), ganhador);
+  const docs = snap.docs;
+  if (docs.length === 0) return alert("Sem participantes!");
+  const sorteado = docs[Math.floor(Math.random() * docs.length)].data();
+  await setDoc(doc(db, "sorteio", "ganhador"), sorteado);
   carregarGanhador();
-  alert("🎉 Ganhador sorteado!");
+  alert("Ganhador sorteado!");
 };
 
-// TIMER AUTOMÁTICO
-setInterval(async () => {
-  const statusSnap = await getDoc(doc(db, "sorteio", "status"));
-  const statusData = statusSnap.data();
-  if (!statusData || !statusData.encerramento) return;
-
+// Timer
+setInterval(() => {
   const agora = new Date();
-  const fim = new Date(statusData.encerramento);
-  const diff = fim - agora;
-  const countdown = document.getElementById("countdown");
-
+  const diff = ENCERRAMENTO - agora;
+  const timer = document.getElementById("countdown");
   if (diff <= 0) {
-    countdown.textContent = "00:00";
-    await updateDoc(doc(db, "sorteio", "status"), { ativo: false });
-    document.getElementById("statusText").textContent = "Inscrições Encerradas";
+    timer.textContent = "00:00";
+    updateDoc(doc(db, "sorteio", "status"), { ativo: false });
   } else {
     const min = Math.floor(diff / 60000);
     const sec = Math.floor((diff % 60000) / 1000);
-    countdown.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    timer.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
   }
 }, 1000);
 </script>
