@@ -4,145 +4,207 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pixcom - Sorteio Pix</title>
+  <meta name="theme-color" content="#111827" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .input-field {
+      background: #1f2937;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 10px;
+      border: 1px solid #374151;
+      border-radius: 4px;
+    }
+    .btn {
+      background: #3b82f6;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+  </style>
 </head>
-<body class="bg-white text-gray-800 font-sans">
+<body class="bg-gray-900 text-white font-sans">
 
-<!-- VIEW PRINCIPAL -->
-<section id="mainView" class="max-w-md mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow">
-  <h1 class="text-2xl font-bold text-blue-600 mb-4 text-center">Pixcom - Sorteio Pix</h1>
-  <p class="text-center text-sm mb-2 text-gray-600">Inscreva-se para concorrer a um Pix!</p>
-  <p class="text-center font-semibold text-yellow-600 mb-4">Status: <span id="statusText">Carregando...</span></p>
-  <p class="text-center text-sm mb-4 text-red-600">Tempo restante: <span id="countdown">--:--</span></p>
-
-  <input type="text" id="instagramHandle" class="border p-2 w-full rounded mb-2" placeholder="@seuInstagram" />
-  <input type="text" id="pixKey" class="border p-2 w-full rounded mb-2" placeholder="Chave Pix" />
-  <button id="registerButton" class="bg-blue-500 hover:bg-blue-600 text-white w-full py-2 rounded mb-4 font-bold">Quero Participar</button>
-
-  <h2 class="text-lg font-bold text-green-600 mt-4">Participantes</h2>
-  <ul id="participantsList" class="text-sm mb-2"></ul>
-  <p id="loadingParticipants" class="text-center text-gray-400">Carregando participantes...</p>
-
-  <p class="text-xs text-gray-500 mt-4">Seu ID: <span id="userIdDisplay"></span></p>
-  <p class="text-center mt-2"><a href="#" id="adminLink" class="text-blue-500 text-sm underline">Acesso Admin</a></p>
-</section>
-
-<!-- VIEW LOGIN -->
-<section id="loginView" class="hidden max-w-md mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow">
-  <h2 class="text-xl font-bold text-yellow-600 text-center mb-4">Login Admin</h2>
-  <input type="email" id="adminEmail" class="border p-2 w-full rounded mb-2" placeholder="Email" />
-  <input type="password" id="adminPassword" class="border p-2 w-full rounded mb-4" placeholder="Senha" />
-  <button id="loginButton" class="bg-yellow-500 text-white w-full py-2 rounded font-bold">Entrar</button>
-</section>
-
-<!-- VIEW ADMIN -->
-<section id="adminPanel" class="hidden max-w-2xl mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow">
-  <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">Painel Admin</h2>
-  <div class="flex flex-wrap gap-2 mb-4 justify-center">
-    <button id="abrirBtn" class="bg-green-500 text-white px-4 py-2 rounded">🔓 Abrir Sorteio</button>
-    <button id="encerrarBtn" class="bg-yellow-500 text-white px-4 py-2 rounded">🔒 Encerrar</button>
-    <button id="sortearBtn" class="bg-purple-600 text-white px-4 py-2 rounded">🎯 Sortear</button>
-    <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded">Sair</button>
+<!-- VISUAL PRINCIPAL -->
+<section id="mainView">
+  <div class="max-w-md mx-auto bg-gray-800 p-6 rounded-lg shadow mt-10 text-center">
+    <h1 class="text-2xl font-bold text-pink-400 mb-4">Pixcom - Sorteio Pix Instagram!</h1>
+    <p class="text-gray-300 mb-4">Inscreva-se para participar e ganhar um Pix!</p>
+    <p class="mb-1 font-semibold">Status: <span class="text-yellow-400" id="statusText">Carregando...</span></p>
+    <span id="timerCountdown" class="block text-sm text-green-300 mb-4"></span>
+    <input type="text" id="instagramHandle" class="input-field" placeholder="@seuinstagram">
+    <input type="text" id="pixKey" class="input-field" placeholder="Chave Pix">
+    <button id="registerButton" class="btn">Quero Participar!</button>
+    <h2 class="text-xl mt-6 mb-2 font-bold text-green-400">Participantes</h2>
+    <ul id="participantsList" class="mb-2 hidden"></ul>
+    <p id="loadingParticipants">Carregando participantes...</p>
+    <p class="text-sm text-gray-400 mt-2">Seu ID: <span id="userIdDisplay"></span></p>
+    <a href="#" id="adminLink" class="text-blue-400 text-sm mt-2 inline-block">Acesso Admin</a>
   </div>
-
-  <h3 class="text-lg font-bold text-green-700 mt-4 mb-2">Participantes</h3>
-  <table class="w-full text-sm table-auto border text-left text-gray-700">
-    <thead><tr><th>@ Instagram</th><th>Chave Pix</th></tr></thead>
-    <tbody id="adminParticipantsList"></tbody>
-  </table>
-
-  <h3 class="text-lg font-bold text-yellow-700 mt-4">🎉 Ganhador</h3>
-  <p id="ganhadorText">Nenhum ainda.</p>
 </section>
 
-<!-- SCRIPT -->
+<!-- LOGIN ADMIN -->
+<section id="loginView" class="hidden">
+  <div class="max-w-md mx-auto bg-gray-800 p-6 rounded-lg shadow mt-10">
+    <h2 class="text-xl font-bold text-yellow-400 text-center mb-4">Login do Admin</h2>
+    <input type="email" id="adminEmail" class="input-field" placeholder="Email">
+    <input type="password" id="adminPassword" class="input-field" placeholder="Senha">
+    <button id="loginButton" class="btn">Entrar</button>
+  </div>
+</section>
+
+<!-- PAINEL ADMIN -->
+<section id="adminPanel" class="hidden">
+  <div class="max-w-xl mx-auto bg-gray-800 p-6 rounded-lg shadow mt-10">
+    <h2 class="text-2xl font-bold text-yellow-300 mb-4 text-center">Painel de Administração</h2>
+
+    <div class="flex flex-wrap gap-2 mb-4">
+      <input type="number" id="minutosInput" class="input-field w-24" placeholder="Min">
+      <button id="abrirBtn" class="btn w-full sm:w-auto">🔓 Abrir Sorteio</button>
+      <button id="encerrarBtn" class="btn w-full sm:w-auto bg-yellow-500">🔒 Encerrar Sorteio</button>
+      <button id="sortearBtn" class="btn w-full sm:w-auto bg-green-600">🎉 Sortear Ganhador</button>
+      <button id="voltarBtn" class="btn w-full sm:w-auto bg-gray-600">← Voltar à Inscrição</button>
+      <button id="logoutButton" class="btn w-full sm:w-auto bg-red-600">Sair</button>
+    </div>
+
+    <h3 class="text-lg font-bold text-green-300 mt-6 mb-2">Participantes</h3>
+    <table class="w-full text-sm table-auto text-left text-gray-200">
+      <thead><tr><th>@ Instagram</th><th>Chave Pix</th></tr></thead>
+      <tbody id="adminParticipantsList"></tbody>
+    </table>
+
+    <h3 class="text-lg font-bold text-yellow-400 mt-6 mb-2">🎯 Ganhador</h3>
+    <p id="ganhadorText" class="text-white">Nenhum ainda.</p>
+  </div>
+</section>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
 
+// 🔐 Firebase config (substitua com seu projeto)
 const firebaseConfig = {
-  apiKey: "AIzaSyDZ2jr8QhV2p4IgcN2x-_fKBv3yeH7mUQU",
-  authDomain: "smart-5a1c5.firebaseapp.com",
-  projectId: "smart-5a1c5",
-  storageBucket: "smart-5a1c5.appspot.com",
-  messagingSenderId: "138657213190",
-  appId: "1:138657213190:web:1652d65b2d6b2d7aefcc87"
+  apiKey: "SUA_API_KEY",
+  authDomain: "SEU_AUTH_DOMAIN",
+  projectId: "SEU_PROJECT_ID",
+  storageBucket: "SEU_BUCKET",
+  messagingSenderId: "SEU_SENDER_ID",
+  appId: "SEU_APP_ID"
 };
-
-const ENCERRAMENTO = new Date("2025-07-28T01:17:15-03:00"); // Troque aqui
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const showView = (view) => {
-  document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
-  view.classList.remove("hidden");
+const mainView = document.getElementById("mainView");
+const loginView = document.getElementById("loginView");
+const adminPanel = document.getElementById("adminPanel");
+
+const showView = (v) => {
+  [mainView, loginView, adminPanel].forEach(el => el.classList.add("hidden"));
+  v.classList.remove("hidden");
 };
 
-const userId = localStorage.getItem("userId") || Math.random().toString(36).substring(2, 10);
-localStorage.setItem("userId", userId);
-document.getElementById("userIdDisplay").textContent = userId;
-
-onAuthStateChanged(auth, async (user) => {
-  if (user && user.emailVerified !== false) {
-    showView(document.getElementById("adminPanel"));
-    carregarParticipantesAdmin();
-    carregarGanhador();
-  } else {
-    showView(document.getElementById("mainView"));
-  }
-});
-
+// Navegação
 document.getElementById("adminLink").onclick = e => {
   e.preventDefault();
-  showView(document.getElementById("loginView"));
+  showView(loginView);
 };
+document.getElementById("voltarBtn").onclick = () => {
+  showView(mainView);
+};
+
+// Login admin
 document.getElementById("loginButton").onclick = async () => {
-  const email = adminEmail.value;
-  const pass = adminPassword.value;
+  const email = document.getElementById("adminEmail").value;
+  const password = document.getElementById("adminPassword").value;
   try {
-    await signInWithEmailAndPassword(auth, email, pass);
+    await signInWithEmailAndPassword(auth, email, password);
   } catch (e) {
     alert("Erro: " + e.message);
   }
 };
 document.getElementById("logoutButton").onclick = () => signOut(auth);
 
+// Autenticação
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    showView(adminPanel);
+    carregarParticipantesAdmin();
+    carregarGanhador();
+  } else {
+    showView(mainView);
+  }
+});
+
+// ID persistente
+const savedId = localStorage.getItem("userId") || Math.random().toString(36).substr(2, 9);
+localStorage.setItem("userId", savedId);
+document.getElementById("userIdDisplay").textContent = savedId;
+
+// Status e contagem
 async function verificarStatus() {
-  const statusSnap = await getDoc(doc(db, "sorteio", "status"));
-  const status = statusSnap.exists() && statusSnap.data().ativo === true;
+  const docSnap = await getDoc(doc(db, "sorteio", "status"));
+  const status = docSnap.exists() && docSnap.data().ativo === true;
   document.getElementById("statusText").textContent = status ? "Inscrições Abertas" : "Inscrições Encerradas";
+  if (docSnap.exists() && docSnap.data().encerramento) {
+    atualizarContagem(docSnap.data().encerramento);
+  }
   return status;
 }
 verificarStatus();
 
+function atualizarContagem(encerramentoStr) {
+  const countdownEl = document.getElementById("timerCountdown");
+  const timer = setInterval(() => {
+    const restante = new Date(encerramentoStr) - new Date();
+    if (restante <= 0) {
+      countdownEl.textContent = "⏰ Tempo encerrado";
+      clearInterval(timer);
+      return;
+    }
+    const min = Math.floor(restante / 60000);
+    const seg = Math.floor((restante % 60000) / 1000);
+    countdownEl.textContent = `⏳ Tempo restante: ${min}m ${seg}s`;
+  }, 1000);
+}
+
+// Registro de participante
 document.getElementById("registerButton").onclick = async () => {
-  const ativo = await verificarStatus();
-  if (!ativo) return alert("Inscrições encerradas!");
-  const instagram = instagramHandle.value.trim();
-  const pix = pixKey.value.trim();
+  const status = await verificarStatus();
+  if (!status) return alert("Inscrições encerradas.");
+  const instagram = document.getElementById("instagramHandle").value.trim();
+  const pix = document.getElementById("pixKey").value.trim();
   if (!instagram || !pix) return alert("Preencha os campos.");
-  await setDoc(doc(db, "participantes", userId), {
-    instagram, chavePix: pix, data: new Date().toISOString()
-  });
-  alert("Inscrição realizada!");
+  try {
+    await setDoc(doc(db, "participantes", savedId), {
+      instagram, chavePix: pix, data: new Date().toISOString()
+    });
+    alert("✅ Inscrição confirmada com sucesso!");
+  } catch (e) {
+    alert("Erro ao salvar: " + e.message);
+  }
 };
 
-onSnapshot(collection(db, "participantes"), snap => {
+// Participantes em tempo real
+onSnapshot(collection(db, "participantes"), snapshot => {
   const ul = document.getElementById("participantsList");
-  const load = document.getElementById("loadingParticipants");
+  const loading = document.getElementById("loadingParticipants");
   ul.innerHTML = "";
-  snap.forEach(doc => {
+  snapshot.forEach(doc => {
     const li = document.createElement("li");
     li.textContent = doc.data().instagram;
     ul.appendChild(li);
   });
   ul.classList.remove("hidden");
-  load.style.display = "none";
+  loading.style.display = "none";
 });
 
+// Funções admin
 async function carregarParticipantesAdmin() {
   const snap = await getDocs(collection(db, "participantes"));
   const tbody = document.getElementById("adminParticipantsList");
@@ -155,43 +217,38 @@ async function carregarParticipantesAdmin() {
 async function carregarGanhador() {
   const docSnap = await getDoc(doc(db, "sorteio", "ganhador"));
   if (docSnap.exists()) {
-    const g = docSnap.data();
-    document.getElementById("ganhadorText").textContent = `${g.instagram} (${g.chavePix})`;
+    const d = docSnap.data();
+    document.getElementById("ganhadorText").textContent = `${d.instagram} (${d.chavePix})`;
   }
 }
 
-document.getElementById("abrirBtn").onclick = () => {
-  updateDoc(doc(db, "sorteio", "status"), { ativo: true });
-  alert("Inscrições abertas.");
-};
-document.getElementById("encerrarBtn").onclick = () => {
-  updateDoc(doc(db, "sorteio", "status"), { ativo: false });
-  alert("Inscrições encerradas.");
-};
-document.getElementById("sortearBtn").onclick = async () => {
-  const snap = await getDocs(collection(db, "participantes"));
-  const lista = snap.docs;
-  if (lista.length === 0) return alert("Sem participantes!");
-  const ganhador = lista[Math.floor(Math.random() * lista.length)].data();
-  await setDoc(doc(db, "sorteio", "ganhador"), ganhador);
-  carregarGanhador();
-  alert("Ganhador sorteado!");
+// Ações dos botões admin
+document.getElementById("abrirBtn").onclick = async () => {
+  const minutos = parseInt(document.getElementById("minutosInput").value || "0");
+  const encerramento = new Date(Date.now() + minutos * 60000);
+  await updateDoc(doc(db, "sorteio", "status"), {
+    ativo: true,
+    encerramento: encerramento.toISOString()
+  });
+  alert(`Sorteio aberto por ${minutos} minutos!`);
+  verificarStatus();
 };
 
-// Relógio regressivo
-setInterval(() => {
-  const agora = new Date();
-  const diff = ENCERRAMENTO - agora;
-  const countdown = document.getElementById("countdown");
-  if (diff <= 0) {
-    countdown.textContent = "00:00";
-    updateDoc(doc(db, "sorteio", "status"), { ativo: false });
-  } else {
-    const min = Math.floor(diff / 60000);
-    const sec = Math.floor((diff % 60000) / 1000);
-    countdown.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-  }
-}, 1000);
+document.getElementById("encerrarBtn").onclick = async () => {
+  await updateDoc(doc(db, "sorteio", "status"), { ativo: false });
+  alert("Sorteio encerrado!");
+  verificarStatus();
+};
+
+document.getElementById("sortearBtn").onclick = async () => {
+  const snap = await getDocs(collection(db, "participantes"));
+  const docs = snap.docs;
+  if (docs.length === 0) return alert("Nenhum participante.");
+  const escolhido = docs[Math.floor(Math.random() * docs.length)].data();
+  await setDoc(doc(db, "sorteio", "ganhador"), escolhido);
+  alert("🎉 Ganhador sorteado!");
+  carregarGanhador();
+};
 </script>
 </body>
 </html>
