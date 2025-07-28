@@ -42,6 +42,7 @@
     <button id="abrirBtn" class="bg-green-500 text-white px-4 py-2 rounded">🔓 Abrir Sorteio</button>
     <button id="encerrarBtn" class="bg-yellow-500 text-white px-4 py-2 rounded">🔒 Encerrar</button>
     <button id="sortearBtn" class="bg-purple-600 text-white px-4 py-2 rounded">🎯 Sortear</button>
+    <button id="voltarBtn" class="bg-gray-500 text-white px-4 py-2 rounded">🔙 Voltar</button>
     <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded">Sair</button>
   </div>
 
@@ -70,7 +71,7 @@ const firebaseConfig = {
   appId: "1:138657213190:web:1652d65b2d6b2d7aefcc87"
 };
 
-const ENCERRAMENTO = new Date("2025-07-28T01:17:15-03:00"); // Troque aqui
+const ENCERRAMENTO = new Date("2025-07-28T23:59:00-03:00"); // Altere aqui
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -99,6 +100,7 @@ document.getElementById("adminLink").onclick = e => {
   e.preventDefault();
   showView(document.getElementById("loginView"));
 };
+
 document.getElementById("loginButton").onclick = async () => {
   const email = adminEmail.value;
   const pass = adminPassword.value;
@@ -108,7 +110,9 @@ document.getElementById("loginButton").onclick = async () => {
     alert("Erro: " + e.message);
   }
 };
+
 document.getElementById("logoutButton").onclick = () => signOut(auth);
+document.getElementById("voltarBtn").onclick = () => showView(document.getElementById("mainView"));
 
 async function verificarStatus() {
   const statusSnap = await getDoc(doc(db, "sorteio", "status"));
