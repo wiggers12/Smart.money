@@ -23,7 +23,7 @@
   <p class="text-center mt-2"><a href="#" id="adminLink" class="text-blue-500 text-sm underline">Acesso Admin</a></p>
 </section>
 
-<!-- TELA LOGIN -->
+<!-- LOGIN -->
 <section id="loginView" class="hidden max-w-md mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow">
   <h2 class="text-xl font-bold text-yellow-600 text-center mb-4">Login Admin</h2>
   <input type="email" id="adminEmail" class="border p-2 w-full rounded mb-2" placeholder="Email" />
@@ -31,7 +31,7 @@
   <button id="loginButton" class="bg-yellow-500 text-white w-full py-2 rounded font-bold">Entrar</button>
 </section>
 
-<!-- TELA ADMIN -->
+<!-- PAINEL ADMIN -->
 <section id="adminPanel" class="hidden max-w-2xl mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow">
   <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">Painel Admin</h2>
   <div class="flex flex-wrap gap-2 mb-4 justify-center">
@@ -89,24 +89,15 @@ const userId = localStorage.getItem("userId") || Math.random().toString(36).subs
 localStorage.setItem("userId", userId);
 document.getElementById("userIdDisplay").textContent = userId;
 
-onAuthStateChanged(auth, async (user) => {
-  if (user && user.emailVerified !== false) {
-    showView(adminPanel);
-    carregarParticipantesAdmin();
-    carregarGanhador();
-    carregarEncerramento();
-  } else {
-    showView(mainView);
-    verificarStatus();
-    carregarEncerramento();
-  }
-});
-
+// EVENTOS GERAIS
 document.getElementById("adminLink").onclick = e => {
   e.preventDefault();
   showView(loginView);
 };
+document.getElementById("logoutButton").onclick = () => signOut(auth);
+document.getElementById("voltarBtn").onclick = () => showView(mainView);
 
+// AUTENTICAÇÃO
 document.getElementById("loginButton").onclick = async () => {
   const email = adminEmail.value;
   const pass = adminPassword.value;
@@ -117,61 +108,47 @@ document.getElementById("loginButton").onclick = async () => {
   }
 };
 
-document.getElementById("logoutButton").onclick = () => signOut(auth);
-document.getElementById("voltarBtn").onclick = () => showView(mainView);
+// FIREBASE AUTH MONITOR
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    showView(adminPanel);
+    carregarParticipantesAdmin();
+    carregarGanhador();
+    carregarEncerramento();
 
-document.getElementById("abrirBtn").onclick = () => updateDoc(doc(db, "sorteio", "status"), { ativo: true });
-document.getElementById("encerrarBtn").onclick = () => updateDoc(doc(db, "sorteio", "status"), { ativo: false });
-document.getElementById("salvarHorario").onclick = () => {
-  const valor = encerramentoInput.value;
-  if (!valor) return alert("Escolha uma data e hora.");
-  updateDoc(doc(db, "sorteio", "status"), { encerramento: valor });
-  alert("Encerramento salvo!");
-};
+    // ✅ Botões admin após login
+    document.getElementById("abrirBtn").onclick = async () => {
+      await updateDoc(doc(db, "sorteio", "status"), { ativo: true });
+      alert("Sorteio aberto!");
+    };
+    document.getElementById("encerrarBtn").onclick = async () => {
+      await updateDoc(doc(db, "sorteio", "status"), { ativo: false });
+      alert("Sorteio encerrado!");
+    };
+    document.getElementById("sortearBtn").onclick = async () => {
+      const snap = await getDocs(collection(db, "participantes"));
+      const lista = snap.docs;
+      if (lista.length === 0) return alert("Sem participantes!");
+      const ganhador = lista[Math.floor(Math.random() * lista.length)].data();
+      await setDoc(doc(db, "sorteio", "ganhador"), ganhador);
+      carregarGanhador();
+      alert("Ganhador sorteado!");
+    };
+    document.getElementById("salvarHorario").onclick = async () => {
+      const valor = encerramentoInput.value;
+      if (!valor) return alert("Escolha uma data e hora.");
+      await updateDoc(doc(db, "sorteio", "status"), { encerramento: valor });
+      alert("Encerramento salvo!");
+    };
 
-document.getElementById("sortearBtn").onclick = async () => {
-  const snap = await getDocs(collection(db, "participantes"));
-  const lista = snap.docs;
-  if (lista.length === 0) return alert("Sem participantes!");
-  const ganhador = lista[Math.floor(Math.random() * lista.length)].data();
-  await setDoc(doc(db, "sorteio", "ganhador"), ganhador);
-  carregarGanhador();
-  alert("Ganhador sorteado!");
-};
-
-async function verificarStatus() {
-  const statusSnap = await getDoc(doc(db, "sorteio", "status"));
-  const ativo = statusSnap.exists() && statusSnap.data().ativo === true;
-  document.getElementById("statusText").textContent = ativo ? "Inscrições Abertas" : "Inscrições Encerradas";
-  return ativo;
-}
-
-async function carregarEncerramento() {
-  const snap = await getDoc(doc(db, "sorteio", "status"));
-  const dado = snap.exists() ? snap.data().encerramento : null;
-  const el = document.getElementById("encerramentoText");
-  if (dado) {
-    const hora = new Date(dado);
-    el.textContent = hora.toLocaleString("pt-BR");
-    encerramentoInput.value = dado;
-    iniciarRelogio(hora);
   } else {
-    el.textContent = "Não definido.";
+    showView(mainView);
+    verificarStatus();
+    carregarEncerramento();
   }
-}
+});
 
-function iniciarRelogio(dataEncerramento) {
-  const statusDoc = doc(db, "sorteio", "status");
-  const interval = setInterval(async () => {
-    const agora = new Date();
-    if (agora >= dataEncerramento) {
-      clearInterval(interval);
-      await updateDoc(statusDoc, { ativo: false });
-      document.getElementById("statusText").textContent = "Inscrições Encerradas";
-    }
-  }, 1000);
-}
-
+// PARTICIPANTE
 document.getElementById("registerButton").onclick = async () => {
   const ativo = await verificarStatus();
   if (!ativo) return alert("Inscrições encerradas!");
@@ -184,6 +161,7 @@ document.getElementById("registerButton").onclick = async () => {
   alert("Inscrição realizada!");
 };
 
+// LISTAGEM
 onSnapshot(collection(db, "participantes"), snap => {
   const ul = document.getElementById("participantsList");
   const load = document.getElementById("loadingParticipants");
@@ -212,6 +190,39 @@ async function carregarGanhador() {
     const g = docSnap.data();
     document.getElementById("ganhadorText").textContent = `${g.instagram} (${g.chavePix})`;
   }
+}
+
+async function verificarStatus() {
+  const statusSnap = await getDoc(doc(db, "sorteio", "status"));
+  const ativo = statusSnap.exists() && statusSnap.data().ativo === true;
+  document.getElementById("statusText").textContent = ativo ? "Inscrições Abertas" : "Inscrições Encerradas";
+  return ativo;
+}
+
+async function carregarEncerramento() {
+  const snap = await getDoc(doc(db, "sorteio", "status"));
+  const dado = snap.exists() ? snap.data().encerramento : null;
+  const el = document.getElementById("encerramentoText");
+  if (dado) {
+    const hora = new Date(dado);
+    el.textContent = hora.toLocaleString("pt-BR");
+    encerramentoInput.value = dado;
+    iniciarRelogio(hora);
+  } else {
+    el.textContent = "Não definido.";
+  }
+}
+
+function iniciarRelogio(dataEncerramento) {
+  const statusDoc = doc(db, "sorteio", "status");
+  const interval = setInterval(async () => {
+    const agora = new Date();
+    if (agora >= new Date(dataEncerramento)) {
+      clearInterval(interval);
+      await updateDoc(statusDoc, { ativo: false });
+      document.getElementById("statusText").textContent = "Inscrições Encerradas";
+    }
+  }, 1000);
 }
 </script>
 </body>
