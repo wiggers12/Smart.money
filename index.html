@@ -12,8 +12,8 @@
 <section id="mainView" class="max-w-md mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow">
   <h1 class="text-2xl font-bold text-blue-600 mb-4 text-center">Pixcom - Sorteio Pix</h1>
   <p class="text-center text-sm mb-2 text-gray-600">Inscreva-se para concorrer a um Pix!</p>
-  <p class="text-center font-semibold text-yellow-600 mb-4">Status: <span id="statusText">Carregando...</span></p>
-  <p class="text-center text-sm mb-4 text-red-600">Tempo restante: <span id="countdown">--:--</span></p>
+  <p class="text-center font-semibold text-yellow-600 mb-2">Status: <span id="statusText">Carregando...</span></p>
+  <p class="text-center text-sm text-red-600 mb-4">Tempo restante: <span id="countdown">--:--</span></p>
 
   <input type="text" id="instagramHandle" class="border p-2 w-full rounded mb-2" placeholder="@seuInstagram" />
   <input type="text" id="pixKey" class="border p-2 w-full rounded mb-2" placeholder="Chave Pix" />
@@ -42,7 +42,7 @@
     <button id="abrirBtn" class="bg-green-500 text-white px-4 py-2 rounded">🔓 Abrir Sorteio</button>
     <button id="encerrarBtn" class="bg-yellow-500 text-white px-4 py-2 rounded">🔒 Encerrar</button>
     <button id="sortearBtn" class="bg-purple-600 text-white px-4 py-2 rounded">🎯 Sortear</button>
-    <button id="voltarBtn" class="bg-gray-500 text-white px-4 py-2 rounded">🔙 Voltar</button>
+    <button id="voltarBtn" class="bg-gray-500 text-white px-4 py-2 rounded">↩️ Voltar</button>
     <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded">Sair</button>
   </div>
 
@@ -70,8 +70,6 @@ const firebaseConfig = {
   messagingSenderId: "138657213190",
   appId: "1:138657213190:web:1652d65b2d6b2d7aefcc87"
 };
-
-const ENCERRAMENTO = new Date("2025-07-28T23:59:00-03:00"); // Altere aqui
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -131,7 +129,7 @@ document.getElementById("registerButton").onclick = async () => {
   await setDoc(doc(db, "participantes", userId), {
     instagram, chavePix: pix, data: new Date().toISOString()
   });
-  alert("Inscrição realizada!");
+  alert("✅ Inscrição confirmada!");
 };
 
 onSnapshot(collection(db, "participantes"), snap => {
@@ -156,6 +154,7 @@ async function carregarParticipantesAdmin() {
     tbody.innerHTML += `<tr><td>${p.instagram}</td><td>${p.chavePix}</td></tr>`;
   });
 }
+
 async function carregarGanhador() {
   const docSnap = await getDoc(doc(db, "sorteio", "ganhador"));
   if (docSnap.exists()) {
@@ -164,14 +163,23 @@ async function carregarGanhador() {
   }
 }
 
-document.getElementById("abrirBtn").onclick = () => {
-  updateDoc(doc(db, "sorteio", "status"), { ativo: true });
-  alert("Inscrições abertas.");
+document.getElementById("abrirBtn").onclick = async () => {
+  const tempo = prompt("Digite o tempo de inscrição em minutos:");
+  if (!tempo || isNaN(tempo)) return alert("Tempo inválido.");
+  const agora = new Date();
+  const encerramento = new Date(agora.getTime() + parseInt(tempo) * 60000);
+  await updateDoc(doc(db, "sorteio", "status"), {
+    ativo: true,
+    encerramento: encerramento.toISOString()
+  });
+  alert(`Sorteio aberto por ${tempo} minutos.`);
 };
+
 document.getElementById("encerrarBtn").onclick = () => {
   updateDoc(doc(db, "sorteio", "status"), { ativo: false });
-  alert("Inscrições encerradas.");
+  alert("Sorteio encerrado.");
 };
+
 document.getElementById("sortearBtn").onclick = async () => {
   const snap = await getDocs(collection(db, "participantes"));
   const lista = snap.docs;
@@ -179,17 +187,24 @@ document.getElementById("sortearBtn").onclick = async () => {
   const ganhador = lista[Math.floor(Math.random() * lista.length)].data();
   await setDoc(doc(db, "sorteio", "ganhador"), ganhador);
   carregarGanhador();
-  alert("Ganhador sorteado!");
+  alert("🎉 Ganhador sorteado!");
 };
 
-// Relógio regressivo
-setInterval(() => {
+// TIMER AUTOMÁTICO
+setInterval(async () => {
+  const statusSnap = await getDoc(doc(db, "sorteio", "status"));
+  const statusData = statusSnap.data();
+  if (!statusData || !statusData.encerramento) return;
+
   const agora = new Date();
-  const diff = ENCERRAMENTO - agora;
+  const fim = new Date(statusData.encerramento);
+  const diff = fim - agora;
   const countdown = document.getElementById("countdown");
+
   if (diff <= 0) {
     countdown.textContent = "00:00";
-    updateDoc(doc(db, "sorteio", "status"), { ativo: false });
+    await updateDoc(doc(db, "sorteio", "status"), { ativo: false });
+    document.getElementById("statusText").textContent = "Inscrições Encerradas";
   } else {
     const min = Math.floor(diff / 60000);
     const sec = Math.floor((diff % 60000) / 1000);
