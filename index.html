@@ -18,19 +18,34 @@
       font-weight: bold;
       z-index: 50;
     }
+    #comprovanteBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #10b981;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 9999px;
+      font-weight: bold;
+      display: none;
+      z-index: 40;
+    }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
-<!-- SPLASH SCREEN -->
+<!-- SPLASH -->
 <div id="splashScreen">pix.com</div>
+
+<!-- BOTÃO COMPROVANTE -->
+<button id="comprovanteBtn" onclick="alert(comprovanteTexto)">📄 Ver Comprovante</button>
 
 <!-- TELA PRINCIPAL -->
 <section id="mainView" class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow hidden">
   <h1 class="text-2xl font-bold text-blue-600 mb-2 text-center">pix.com - Sorteio Pix</h1>
-  <p class="text-center mb-1">Inscreva-se e concorra ao prêmio abaixo:</p>
-  <p class="text-center text-green-700 font-semibold mb-1">🎁 Prêmio: <span id="premioText">Carregando...</span></p>
-  <p class="text-center text-yellow-600 font-semibold">Status: <span id="statusText">Carregando...</span></p>
+  <p class="text-center">Inscreva-se e concorra ao prêmio:</p>
+  <p class="text-center text-green-700 font-semibold">🎁 Prêmio: <span id="premioText">Carregando...</span></p>
+  <p class="text-center text-yellow-600">Status: <span id="statusText">Carregando...</span></p>
   <p class="text-center text-red-600 mb-3">Encerramento: <span id="countdown">--:--</span></p>
 
   <input type="text" id="instagramHandle" class="border p-2 w-full rounded mb-2" placeholder="@seuInstagram" />
@@ -77,7 +92,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDZ2jr8QhV2p4IgcN2x-_fKBv3yeH7mUQU",
@@ -92,7 +107,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Splash screen
+// Splash
 window.addEventListener("load", () => {
   setTimeout(() => {
     document.getElementById("splashScreen").style.display = "none";
@@ -110,6 +125,8 @@ const showView = v => [mainView, loginView, adminPanel].forEach(s => s.classList
 const userId = localStorage.getItem("userId") || Math.random().toString(36).substr(2, 9);
 localStorage.setItem("userId", userId);
 document.getElementById("userIdDisplay").textContent = userId;
+
+let comprovanteTexto = "";
 
 // Login
 onAuthStateChanged(auth, async user => {
@@ -154,15 +171,12 @@ document.getElementById("registerButton").onclick = async () => {
   await setDoc(doc(db, "participantes", userId), {
     instagram, chavePix, whatsapp, data: new Date().toISOString()
   });
+  comprovanteTexto = `📄 COMPROVANTE DE INSCRIÇÃO\n\n🎁 Prêmio: ${status.premio}\n📅 Encerramento: ${new Date(status.encerramento).toLocaleString()}\n👤 Instagram: ${instagram}\n💰 Chave Pix: ${chavePix}\n📱 WhatsApp: ${whatsapp}\n🆔 ID: ${userId}`;
   alert("Inscrição confirmada!");
-
-  // Link de mensagem automática (não requer liberação no Firebase)
-  const msg = `Olá! Sua inscrição foi confirmada no sorteio do pix.com. Boa sorte! 🍀`;
-  const link = `https://wa.me/55${whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`;
-  window.open(link, "_blank");
+  document.getElementById("comprovanteBtn").style.display = "block";
 };
 
-// Participantes admin
+// Participantes
 async function carregarParticipantesAdmin() {
   const snap = await getDocs(collection(db, "participantes"));
   const tbody = document.getElementById("adminParticipantsList");
@@ -208,7 +222,7 @@ document.getElementById("sortearBtn").onclick = async () => {
   const ganhador = lista[Math.floor(Math.random() * lista.length)].data();
   await setDoc(doc(db, "sorteio", "ganhador"), ganhador);
   carregarGanhador();
-  alert(`Ganhador: ${ganhador.instagram}`);
+  alert(`🎉 Ganhador: ${ganhador.instagram}`);
 };
 </script>
 </body>
