@@ -14,7 +14,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8rem;
+      font-size: 2rem;
       font-weight: bold;
       z-index: 50;
     }
@@ -24,12 +24,12 @@
       right: 20px;
       background-color: #10b981;
       color: white;
-      padding: 10px 15px;
-      border-radius: 50px;
-      font-size: 0.9rem;
+      padding: 10px 14px;
+      border-radius: 50%;
+      font-size: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
       display: none;
       z-index: 40;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
   </style>
 </head>
@@ -38,8 +38,8 @@
 <!-- SPLASH SCREEN -->
 <div id="splashScreen">pix.com</div>
 
-<!-- COMPROVANTE -->
-<button id="comprovanteBtn">📄 Ver Comprovante</button>
+<!-- BOTÃO COMPROVANTE -->
+<button id="comprovanteBtn" title="Ver comprovante">🧾</button>
 
 <!-- TELA PRINCIPAL -->
 <section id="mainView" class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow hidden">
@@ -58,7 +58,7 @@
   <p class="text-center mt-2"><a href="#" id="adminLink" class="text-blue-500 text-sm underline">Acesso Admin</a></p>
 </section>
 
-<!-- LOGIN -->
+<!-- TELA LOGIN ADMIN -->
 <section id="loginView" class="hidden max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow">
   <h2 class="text-xl font-bold text-yellow-600 text-center mb-4">Login Admin</h2>
   <input type="email" id="adminEmail" class="border p-2 w-full rounded mb-2" placeholder="Email" />
@@ -71,8 +71,8 @@
   <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">Painel Admin</h2>
   <div class="flex flex-wrap gap-2 mb-4 justify-center">
     <input type="text" id="premioInput" class="border p-2 rounded" placeholder="Descrição do Prêmio" />
-    <button id="abrirBtn" class="bg-green-500 text-white px-4 py-2 rounded">🔓 Abrir Sorteio</button>
     <input type="datetime-local" id="dataEncerramento" class="border p-2 rounded" />
+    <button id="abrirBtn" class="bg-green-500 text-white px-4 py-2 rounded">🔓 Abrir</button>
     <button id="encerrarBtn" class="bg-yellow-500 text-white px-4 py-2 rounded">🔒 Encerrar</button>
     <button id="sortearBtn" class="bg-purple-600 text-white px-4 py-2 rounded">🎯 Sortear</button>
     <button id="voltarBtn" class="bg-gray-600 text-white px-4 py-2 rounded">Voltar</button>
@@ -89,7 +89,7 @@
   <p id="ganhadorText">Nenhum ainda.</p>
 </section>
 
-<!-- SCRIPT -->
+<!-- FIREBASE E SCRIPT -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
@@ -113,10 +113,9 @@ window.addEventListener("load", () => {
   setTimeout(() => {
     document.getElementById("splashScreen").style.display = "none";
     showView(mainView);
-  }, 1500);
+  }, 1200);
 });
 
-// Views
 const mainView = document.getElementById("mainView");
 const loginView = document.getElementById("loginView");
 const adminPanel = document.getElementById("adminPanel");
@@ -127,7 +126,7 @@ const userId = localStorage.getItem("userId") || Math.random().toString(36).subs
 localStorage.setItem("userId", userId);
 document.getElementById("userIdDisplay").textContent = userId;
 
-// Login
+// Autenticação
 onAuthStateChanged(auth, async user => {
   if (user) {
     showView(adminPanel);
@@ -137,8 +136,10 @@ onAuthStateChanged(auth, async user => {
 });
 document.getElementById("adminLink").onclick = e => { e.preventDefault(); showView(loginView); };
 document.getElementById("loginButton").onclick = async () => {
+  const email = adminEmail.value;
+  const pass = adminPassword.value;
   try {
-    await signInWithEmailAndPassword(auth, adminEmail.value, adminPassword.value);
+    await signInWithEmailAndPassword(auth, email, pass);
     showView(adminPanel);
   } catch (e) {
     alert("Erro: " + e.message);
@@ -147,7 +148,7 @@ document.getElementById("loginButton").onclick = async () => {
 document.getElementById("logoutButton").onclick = () => { signOut(auth); showView(mainView); };
 document.getElementById("voltarBtn").onclick = () => showView(mainView);
 
-// Status
+// Status / prêmio
 async function verificarStatus() {
   const snap = await getDoc(doc(db, "sorteio", "status"));
   const dados = snap.exists() && snap.data();
@@ -159,8 +160,7 @@ async function verificarPremio() {
   const snap = await getDoc(doc(db, "sorteio", "status"));
   document.getElementById("premioText").textContent = snap.exists() ? snap.data().premio || "Não informado" : "Não informado";
 }
-verificarStatus();
-verificarPremio();
+verificarStatus(); verificarPremio();
 
 // Inscrição
 document.getElementById("registerButton").onclick = async () => {
@@ -170,15 +170,21 @@ document.getElementById("registerButton").onclick = async () => {
   const chavePix = pixKey.value.trim();
   const whatsapp = whatsappNumber.value.trim();
   if (!instagram || !chavePix || !whatsapp) return alert("Preencha todos os campos.");
-  const horario = new Date().toLocaleString();
   await setDoc(doc(db, "participantes", userId), {
     instagram, chavePix, whatsapp, data: new Date().toISOString()
   });
-  document.getElementById("comprovanteBtn").style.display = "block";
-  document.getElementById("comprovanteBtn").onclick = () => {
-    alert(`✅ Inscrição Confirmada!\n📌 Instagram: ${instagram}\n💰 Prêmio: ${status.premio}\n🕐 Horário: ${horario}\n📱 WhatsApp: ${whatsapp}`);
-  };
   alert("Inscrição confirmada!");
+  document.getElementById("comprovanteBtn").style.display = "block";
+};
+
+// Botão comprovante
+document.getElementById("comprovanteBtn").onclick = () => {
+  const instagram = instagramHandle.value.trim();
+  const chavePix = pixKey.value.trim();
+  const whatsapp = whatsappNumber.value.trim();
+  const premio = document.getElementById("premioText").textContent;
+  const data = new Date().toLocaleString();
+  alert(`🧾 Comprovante:\nInstagram: ${instagram}\nPix: ${chavePix}\nWhats: ${whatsapp}\nPrêmio: ${premio}\nData: ${data}`);
 };
 
 // Participantes admin
@@ -212,8 +218,7 @@ document.getElementById("abrirBtn").onclick = async () => {
     premio: premioInput
   });
   alert("Sorteio aberto.");
-  verificarStatus();
-  verificarPremio();
+  verificarStatus(); verificarPremio();
 };
 document.getElementById("encerrarBtn").onclick = async () => {
   await updateDoc(doc(db, "sorteio", "status"), { ativo: false });
