@@ -1,4 +1,3 @@
-<!-- SISTEMA PIX.COM ATUALIZADO - BUILD 2025-07-28 22:08:58 -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -7,64 +6,66 @@
   <title>pix.com - Sorteio Pix</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    #splash {
+    #splashScreen {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #0f172a;
+      inset: 0;
+      background-color: #1e40af;
       color: white;
       display: flex;
-      justify-content: center;
       align-items: center;
-      font-size: 1.5rem;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: bold;
       z-index: 50;
     }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-100 text-gray-800 font-sans">
 
-<!-- Splash Screen -->
-<div id="splash">🚀 Bem-vindo ao <b class="ml-2 text-blue-400">pix.com</b></div>
+<!-- SPLASH SCREEN -->
+<div id="splashScreen">pix.com</div>
 
 <!-- TELA PRINCIPAL -->
-<section id="mainView" class="max-w-md mx-auto mt-12 p-6 bg-white shadow-lg rounded-lg hidden">
-  <h1 class="text-2xl font-bold text-blue-600 mb-3 text-center">pix.com - Sorteio Pix</h1>
-  <p class="text-center text-sm mb-1">Inscreva-se e concorra ao prêmio abaixo:</p>
-  <p class="text-center font-semibold text-green-600 mb-1">🎁 Prêmio: <span id="premioText">Carregando...</span></p>
-  <p class="text-center font-medium text-yellow-600 mb-1">Status: <span id="statusText">Carregando...</span></p>
-  <p class="text-center text-sm mb-3 text-red-600">Encerramento: <span id="countdown">--:--</span></p>
+<section id="mainView" class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow hidden">
+  <h1 class="text-2xl font-bold text-blue-600 mb-2 text-center">pix.com - Sorteio Pix</h1>
+  <p class="text-center mb-1">Inscreva-se e concorra ao prêmio abaixo:</p>
+  <p class="text-center text-green-700 font-semibold mb-1">🎁 Prêmio: <span id="premioText">Carregando...</span></p>
+  <p class="text-center text-yellow-600 font-semibold">Status: <span id="statusText">Carregando...</span></p>
+  <p class="text-center text-red-600 mb-3">Encerramento: <span id="countdown">--:--</span></p>
 
-  <input id="instagramHandle" type="text" class="border p-2 w-full rounded mb-2" placeholder="@seuInstagram" />
-  <input id="pixKey" type="text" class="border p-2 w-full rounded mb-2" placeholder="Chave Pix" />
-  <input id="whatsapp" type="text" class="border p-2 w-full rounded mb-2" placeholder="WhatsApp com DDD (ex: 51999999999)" />
-  <button id="registerButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold w-full py-2 rounded">Quero Participar</button>
+  <input type="text" id="instagramHandle" class="border p-2 w-full rounded mb-2" placeholder="@seuInstagram" />
+  <input type="text" id="pixKey" class="border p-2 w-full rounded mb-2" placeholder="Chave Pix" />
+  <input type="text" id="whatsappNumber" class="border p-2 w-full rounded mb-2" placeholder="WhatsApp com DDD" />
+  <button id="registerButton" class="bg-blue-500 hover:bg-blue-600 text-white w-full py-2 rounded font-bold">Quero Participar</button>
 
-  <p class="text-xs mt-3 text-gray-500">Seu ID: <span id="userIdDisplay"></span></p>
+  <p class="text-xs text-gray-500 mt-3">Seu ID: <span id="userIdDisplay"></span></p>
   <p class="text-center mt-2"><a href="#" id="adminLink" class="text-blue-500 text-sm underline">Acesso Admin</a></p>
 </section>
 
-<!-- LOGIN ADMIN -->
-<section id="loginView" class="hidden max-w-md mx-auto mt-12 p-6 bg-white shadow-lg rounded-lg">
+<!-- LOGIN -->
+<section id="loginView" class="hidden max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow">
   <h2 class="text-xl font-bold text-yellow-600 text-center mb-4">Login Admin</h2>
-  <input id="adminEmail" type="email" class="border p-2 w-full rounded mb-2" placeholder="Email" />
-  <input id="adminPassword" type="password" class="border p-2 w-full rounded mb-4" placeholder="Senha" />
-  <button id="loginButton" class="bg-yellow-500 hover:bg-yellow-600 text-white w-full py-2 rounded font-bold">Entrar</button>
+  <input type="email" id="adminEmail" class="border p-2 w-full rounded mb-2" placeholder="Email" />
+  <input type="password" id="adminPassword" class="border p-2 w-full rounded mb-4" placeholder="Senha" />
+  <button id="loginButton" class="bg-yellow-500 text-white w-full py-2 rounded font-bold">Entrar</button>
 </section>
 
 <!-- PAINEL ADMIN -->
-<section id="adminPanel" class="hidden max-w-2xl mx-auto mt-10 p-6 bg-white rounded shadow">
+<section id="adminPanel" class="hidden max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
   <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">Painel Admin</h2>
-  <div class="flex flex-wrap gap-2 justify-center mb-4">
+  <div class="flex flex-wrap gap-2 mb-4 justify-center">
+    <input type="text" id="premioInput" class="border p-2 rounded" placeholder="Descrição do Prêmio" />
+    <button id="abrirBtn" class="bg-green-500 text-white px-4 py-2 rounded">🔓 Abrir Sorteio</button>
     <input type="datetime-local" id="dataEncerramento" class="border p-2 rounded" />
-    <input type="text" id="inputPremio" class="border p-2 rounded" placeholder="Prêmio do Sorteio" />
-    <button id="abrirBtn" class="bg-green-600 text-white px-4 py-2 rounded">🔓 Abrir Sorteio</button>
-    <button id="encerrarBtn" class="bg-yellow-600 text-white px-4 py-2 rounded">🔒 Encerrar</button>
-    <button id="sortearBtn" class="bg-purple-700 text-white px-4 py-2 rounded">🎯 Sortear</button>
+    <button id="encerrarBtn" class="bg-yellow-500 text-white px-4 py-2 rounded">🔒 Encerrar</button>
+    <button id="sortearBtn" class="bg-purple-600 text-white px-4 py-2 rounded">🎯 Sortear</button>
+    <button id="voltarBtn" class="bg-gray-600 text-white px-4 py-2 rounded">Voltar</button>
     <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded">Sair</button>
   </div>
 
   <h3 class="text-lg font-bold text-green-700 mt-4 mb-2">Participantes</h3>
-  <table class="w-full text-sm border text-left text-gray-700">
-    <thead><tr><th>Instagram</th><th>Pix</th><th>WhatsApp</th></tr></thead>
+  <table class="w-full text-sm table-auto border text-left text-gray-700">
+    <thead><tr><th>@Instagram</th><th>Chave Pix</th><th>WhatsApp</th></tr></thead>
     <tbody id="adminParticipantsList"></tbody>
   </table>
 
@@ -72,7 +73,7 @@
   <p id="ganhadorText">Nenhum ainda.</p>
 </section>
 
-<!-- SCRIPTS -->
+<!-- SCRIPT -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
@@ -91,105 +92,104 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Splash
-setTimeout(() => {
-  document.getElementById("splash").style.display = "none";
-  document.getElementById("mainView").classList.remove("hidden");
-}, 1500);
+// Splash screen
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    document.getElementById("splashScreen").style.display = "none";
+    showView(mainView);
+  }, 1500);
+});
+
+// Views
+const mainView = document.getElementById("mainView");
+const loginView = document.getElementById("loginView");
+const adminPanel = document.getElementById("adminPanel");
+const showView = v => [mainView, loginView, adminPanel].forEach(s => s.classList.add("hidden")) || v.classList.remove("hidden");
 
 // UID
 const userId = localStorage.getItem("userId") || Math.random().toString(36).substr(2, 9);
 localStorage.setItem("userId", userId);
 document.getElementById("userIdDisplay").textContent = userId;
 
-// View handler
-const mainView = document.getElementById("mainView");
-const loginView = document.getElementById("loginView");
-const adminPanel = document.getElementById("adminPanel");
-const showView = v => [mainView, loginView, adminPanel].forEach(s => s.classList.toggle("hidden", s !== v));
-
 // Login
 onAuthStateChanged(auth, async user => {
-  if (user) {
+  if (user && user.emailVerified !== false) {
     showView(adminPanel);
     carregarParticipantesAdmin();
     carregarGanhador();
-  } else {
-    showView(mainView);
   }
 });
 document.getElementById("adminLink").onclick = e => { e.preventDefault(); showView(loginView); };
 document.getElementById("loginButton").onclick = async () => {
-  const email = adminEmail.value, pass = adminPassword.value;
-  try { await signInWithEmailAndPassword(auth, email, pass); } catch (e) { alert("Erro: " + e.message); }
+  const email = adminEmail.value;
+  const pass = adminPassword.value;
+  try { await signInWithEmailAndPassword(auth, email, pass); showView(adminPanel); } catch (e) { alert("Erro: " + e.message); }
 };
-document.getElementById("logoutButton").onclick = () => signOut(auth);
+document.getElementById("logoutButton").onclick = () => { signOut(auth); showView(mainView); };
+document.getElementById("voltarBtn").onclick = () => showView(mainView);
 
-// Verificação e exibição de status/premio
+// Status
 async function verificarStatus() {
-  const ref = doc(db, "sorteio", "status");
-  const snap = await getDoc(ref);
-  const ativo = snap.exists() && snap.data().ativo;
-  const encerramento = snap.exists() && snap.data().encerramento;
-  const premio = snap.exists() && snap.data().premio;
-
-  document.getElementById("statusText").textContent = ativo ? "Inscrições Abertas" : "Encerradas";
-  document.getElementById("premioText").textContent = premio || "Não informado";
-  return { ativo, encerramento };
+  const snap = await getDoc(doc(db, "sorteio", "status"));
+  const dados = snap.exists() && snap.data();
+  document.getElementById("statusText").textContent = dados?.ativo ? "Inscrições Abertas" : "Inscrições Encerradas";
+  document.getElementById("countdown").textContent = dados?.encerramento ? new Date(dados.encerramento).toLocaleString() : "--:--";
+  return dados;
+}
+async function verificarPremio() {
+  const snap = await getDoc(doc(db, "sorteio", "status"));
+  document.getElementById("premioText").textContent = snap.exists() ? snap.data().premio || "Não informado" : "Não informado";
 }
 verificarStatus();
+verificarPremio();
 
 // Inscrição
 document.getElementById("registerButton").onclick = async () => {
-  const { ativo } = await verificarStatus();
-  if (!ativo) return alert("Inscrições encerradas.");
-
+  const status = await verificarStatus();
+  if (!status?.ativo) return alert("Inscrições encerradas.");
   const instagram = instagramHandle.value.trim();
   const chavePix = pixKey.value.trim();
-  const whatsapp = whatsapp.value.trim();
+  const whatsapp = whatsappNumber.value.trim();
   if (!instagram || !chavePix || !whatsapp) return alert("Preencha todos os campos.");
-
-  await setDoc(doc(db, "participantes", userId), { instagram, chavePix, whatsapp, data: new Date().toISOString() });
-  alert("Inscrição confirmada!");
-
-  // Enviar mensagem WhatsApp
-  const msg = `Olá! Sua inscrição no sorteio pix.com foi confirmada! 🍀\nBoa sorte!\nID: ${userId}`;
-  window.open(`https://wa.me/55${whatsapp}?text=${encodeURIComponent(msg)}`, "_blank");
+  await setDoc(doc(db, "participantes", userId), {
+    instagram, chavePix, whatsapp, data: new Date().toISOString()
+  });
+  alert("Inscrição confirmada! Você receberá novidades pelo WhatsApp.");
 };
 
-// Participantes públicos
-onSnapshot(collection(db, "participantes"), snap => {
+// Participantes admin
+async function carregarParticipantesAdmin() {
+  const snap = await getDocs(collection(db, "participantes"));
   const tbody = document.getElementById("adminParticipantsList");
   tbody.innerHTML = "";
   snap.forEach(doc => {
     const d = doc.data();
-    const row = `<tr><td>${d.instagram}</td><td>${d.chavePix}</td><td>${d.whatsapp}</td></tr>`;
-    tbody.innerHTML += row;
+    tbody.innerHTML += `<tr><td>${d.instagram}</td><td>${d.chavePix}</td><td>${d.whatsapp}</td></tr>`;
   });
-});
+}
 
 // Ganhador
 async function carregarGanhador() {
-  const ref = doc(db, "sorteio", "ganhador");
-  const snap = await getDoc(ref);
-  if (snap.exists()) {
-    const g = snap.data();
+  const docSnap = await getDoc(doc(db, "sorteio", "ganhador"));
+  if (docSnap.exists()) {
+    const g = docSnap.data();
     document.getElementById("ganhadorText").textContent = `${g.instagram} (${g.chavePix})`;
-    if (g.whatsapp) {
-      const msg = `🎉 Parabéns! Você foi o ganhador do sorteio pix.com! 🤑\nPix: ${g.chavePix}`;
-      window.open(`https://wa.me/55${g.whatsapp}?text=${encodeURIComponent(msg)}`, "_blank");
-    }
   }
 }
 
-// Botões admin
+// Admin ações
 document.getElementById("abrirBtn").onclick = async () => {
-  const encerramento = document.getElementById("dataEncerramento").value;
-  const premio = document.getElementById("inputPremio").value;
-  if (!encerramento || !premio) return alert("Preencha data e prêmio!");
-  await setDoc(doc(db, "sorteio", "status"), { ativo: true, encerramento, premio });
-  alert("Sorteio aberto!");
+  const dataInput = document.getElementById("dataEncerramento").value;
+  const premioInput = document.getElementById("premioInput").value;
+  if (!dataInput || !premioInput) return alert("Preencha data e prêmio.");
+  await setDoc(doc(db, "sorteio", "status"), {
+    ativo: true,
+    encerramento: dataInput,
+    premio: premioInput
+  });
+  alert("Sorteio aberto.");
   verificarStatus();
+  verificarPremio();
 };
 document.getElementById("encerrarBtn").onclick = async () => {
   await updateDoc(doc(db, "sorteio", "status"), { ativo: false });
@@ -203,27 +203,8 @@ document.getElementById("sortearBtn").onclick = async () => {
   const ganhador = lista[Math.floor(Math.random() * lista.length)].data();
   await setDoc(doc(db, "sorteio", "ganhador"), ganhador);
   carregarGanhador();
-  alert("Ganhador sorteado!");
+  alert(`Ganhador: ${ganhador.instagram}`);
 };
-
-// Timer
-setInterval(async () => {
-  const ref = doc(db, "sorteio", "status");
-  const snap = await getDoc(ref);
-  const encerramentoStr = snap.exists() && snap.data().encerramento;
-  const encerramento = new Date(encerramentoStr);
-  const now = new Date();
-  const diff = encerramento - now;
-  const countdown = document.getElementById("countdown");
-  if (diff <= 0) {
-    countdown.textContent = "00:00";
-    updateDoc(ref, { ativo: false });
-  } else {
-    const min = Math.floor(diff / 60000);
-    const sec = Math.floor((diff % 60000) / 1000);
-    countdown.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-  }
-}, 1000);
 </script>
 </body>
 </html>
