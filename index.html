@@ -14,7 +14,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: bold;
       z-index: 50;
     }
@@ -24,28 +24,29 @@
       right: 20px;
       background-color: #10b981;
       color: white;
-      padding: 10px 16px;
-      border-radius: 9999px;
-      font-weight: bold;
+      padding: 10px 15px;
+      border-radius: 50px;
+      font-size: 0.9rem;
       display: none;
       z-index: 40;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
-<!-- SPLASH -->
+<!-- SPLASH SCREEN -->
 <div id="splashScreen">pix.com</div>
 
-<!-- BOTÃO COMPROVANTE -->
-<button id="comprovanteBtn" onclick="alert(comprovanteTexto)">📄 Ver Comprovante</button>
+<!-- COMPROVANTE -->
+<button id="comprovanteBtn">📄 Ver Comprovante</button>
 
 <!-- TELA PRINCIPAL -->
 <section id="mainView" class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow hidden">
   <h1 class="text-2xl font-bold text-blue-600 mb-2 text-center">pix.com - Sorteio Pix</h1>
-  <p class="text-center">Inscreva-se e concorra ao prêmio:</p>
-  <p class="text-center text-green-700 font-semibold">🎁 Prêmio: <span id="premioText">Carregando...</span></p>
-  <p class="text-center text-yellow-600">Status: <span id="statusText">Carregando...</span></p>
+  <p class="text-center mb-1">Inscreva-se e concorra ao prêmio abaixo:</p>
+  <p class="text-center text-green-700 font-semibold mb-1">🎁 Prêmio: <span id="premioText">Carregando...</span></p>
+  <p class="text-center text-yellow-600 font-semibold">Status: <span id="statusText">Carregando...</span></p>
   <p class="text-center text-red-600 mb-3">Encerramento: <span id="countdown">--:--</span></p>
 
   <input type="text" id="instagramHandle" class="border p-2 w-full rounded mb-2" placeholder="@seuInstagram" />
@@ -126,11 +127,9 @@ const userId = localStorage.getItem("userId") || Math.random().toString(36).subs
 localStorage.setItem("userId", userId);
 document.getElementById("userIdDisplay").textContent = userId;
 
-let comprovanteTexto = "";
-
 // Login
 onAuthStateChanged(auth, async user => {
-  if (user && user.emailVerified !== false) {
+  if (user) {
     showView(adminPanel);
     carregarParticipantesAdmin();
     carregarGanhador();
@@ -138,9 +137,12 @@ onAuthStateChanged(auth, async user => {
 });
 document.getElementById("adminLink").onclick = e => { e.preventDefault(); showView(loginView); };
 document.getElementById("loginButton").onclick = async () => {
-  const email = adminEmail.value;
-  const pass = adminPassword.value;
-  try { await signInWithEmailAndPassword(auth, email, pass); showView(adminPanel); } catch (e) { alert("Erro: " + e.message); }
+  try {
+    await signInWithEmailAndPassword(auth, adminEmail.value, adminPassword.value);
+    showView(adminPanel);
+  } catch (e) {
+    alert("Erro: " + e.message);
+  }
 };
 document.getElementById("logoutButton").onclick = () => { signOut(auth); showView(mainView); };
 document.getElementById("voltarBtn").onclick = () => showView(mainView);
@@ -168,15 +170,18 @@ document.getElementById("registerButton").onclick = async () => {
   const chavePix = pixKey.value.trim();
   const whatsapp = whatsappNumber.value.trim();
   if (!instagram || !chavePix || !whatsapp) return alert("Preencha todos os campos.");
+  const horario = new Date().toLocaleString();
   await setDoc(doc(db, "participantes", userId), {
     instagram, chavePix, whatsapp, data: new Date().toISOString()
   });
-  comprovanteTexto = `📄 COMPROVANTE DE INSCRIÇÃO\n\n🎁 Prêmio: ${status.premio}\n📅 Encerramento: ${new Date(status.encerramento).toLocaleString()}\n👤 Instagram: ${instagram}\n💰 Chave Pix: ${chavePix}\n📱 WhatsApp: ${whatsapp}\n🆔 ID: ${userId}`;
-  alert("Inscrição confirmada!");
   document.getElementById("comprovanteBtn").style.display = "block";
+  document.getElementById("comprovanteBtn").onclick = () => {
+    alert(`✅ Inscrição Confirmada!\n📌 Instagram: ${instagram}\n💰 Prêmio: ${status.premio}\n🕐 Horário: ${horario}\n📱 WhatsApp: ${whatsapp}`);
+  };
+  alert("Inscrição confirmada!");
 };
 
-// Participantes
+// Participantes admin
 async function carregarParticipantesAdmin() {
   const snap = await getDocs(collection(db, "participantes"));
   const tbody = document.getElementById("adminParticipantsList");
