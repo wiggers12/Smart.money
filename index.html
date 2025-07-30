@@ -1,236 +1,141 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>pix.com - Sorteio Pix</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Curso de Beleza - Espaço Tai Botelho</title>
   <style>
-    #splashScreen {
-      position: fixed;
-      inset: 0;
-      background-color: #1e40af;
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #fffaf7;
+      color: #4a2c20;
+    }
+    header {
+      background: #d8b08c;
+      padding: 30px 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+    }
+    .section {
+      padding: 30px 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    .section h2 {
+      color: #b46f3a;
+    }
+    .highlight {
+      background: #fff3e6;
+      padding: 20px;
+      border-left: 5px solid #d89362;
+      margin-bottom: 20px;
+    }
+    .list {
+      list-style: none;
+      padding-left: 0;
+    }
+    .list li {
+      margin-bottom: 10px;
+    }
+    .cta {
+      text-align: center;
+      padding: 30px;
+      background: #b46f3a;
       color: white;
+    }
+    .cta a {
+      text-decoration: none;
+      background: #fff;
+      color: #b46f3a;
+      padding: 15px 30px;
+      border-radius: 30px;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 20px;
+    }
+    .testimonial {
+      font-style: italic;
+      margin-bottom: 15px;
+    }
+    .instructor {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      font-weight: bold;
-      z-index: 50;
+      gap: 20px;
     }
-    #comprovanteBtn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #10b981;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 9999px;
-      font-weight: bold;
-      display: none;
-      z-index: 40;
+    .instructor img {
+      width: 120px;
+      border-radius: 100px;
+    }
+    @media (max-width: 600px) {
+      .instructor {
+        flex-direction: column;
+        text-align: center;
+      }
     }
   </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans">
+<body>
 
-<!-- SPLASH SCREEN -->
-<div id="splashScreen">pix.com</div>
+<header>
+  <h1>Transforme sua Paixão em Profissão</h1>
+  <p><strong>Curso Completo de Beleza & Estética</strong></p>
+</header>
 
-<!-- BOTÃO COMPROVANTE -->
-<button id="comprovanteBtn">📄 Ver Comprovante</button>
+<div class="section">
+  <h2>O que você vai aprender:</h2>
+  <ul class="list">
+    <li>💅 Manicure e Pedicure profissional</li>
+    <li>💎 Unhas em Gel e Fibra</li>
+    <li>💄 Maquiagem para todas as ocasiões</li>
+    <li>👁️ Design de Cílios e Sobrancelhas</li>
+    <li>💥 Técnicas de Depilação</li>
+    <li>🎨 Mechas, Escova, Penteados e Cortes</li>
+    <li>💰 Como trabalhar por conta e ganhar dinheiro</li>
+  </ul>
+</div>
 
-<!-- TELA PRINCIPAL -->
-<section id="mainView" class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow hidden">
-  <h1 class="text-2xl font-bold text-blue-600 mb-2 text-center">pix.com - Sorteio Pix</h1>
-  <p class="text-center mb-1">Inscreva-se e concorra ao prêmio abaixo:</p>
-  <p class="text-center text-green-700 font-semibold mb-1">🎁 Prêmio: <span id="premioText">Carregando...</span></p>
-  <p class="text-center text-yellow-600 font-semibold">Status: <span id="statusText">Carregando...</span></p>
-  <p class="text-center text-red-600 mb-3">Encerramento: <span id="countdown">--:--</span></p>
+<div class="section highlight">
+  <h2>O que você recebe:</h2>
+  <ul class="list">
+    <li>✅ Curso 100% Online</li>
+    <li>✅ Acesso Vitalício</li>
+    <li>✅ Certificado Incluso</li>
+    <li>✅ Aulas práticas e didáticas</li>
+    <li>✅ Suporte exclusivo</li>
+    <li>✅ Comunidade de alunas</li>
+  </ul>
+</div>
 
-  <input type="text" id="instagramHandle" class="border p-2 w-full rounded mb-2" placeholder="@seuInstagram" />
-  <input type="text" id="pixKey" class="border p-2 w-full rounded mb-2" placeholder="Chave Pix" />
-  <input type="text" id="whatsappNumber" class="border p-2 w-full rounded mb-2" placeholder="WhatsApp com DDD" />
-  <button id="registerButton" class="bg-blue-500 hover:bg-blue-600 text-white w-full py-2 rounded font-bold">Quero Participar</button>
+<div class="section">
+  <h2>Para quem é esse curso?</h2>
+  <p>👩‍🎓 Iniciantes no ramo da beleza</p>
+  <p>📈 Profissionais que querem se atualizar</p>
+  <p>🏠 Pessoas que sonham em trabalhar por conta</p>
+</div>
 
-  <p id="ganhadorDisplay" class="text-center text-sm text-purple-700 mt-4 hidden">🎉 Último Ganhador: <span id="ganhadorText"></span></p>
-
-  <p class="text-xs text-gray-500 mt-3">Seu ID: <span id="userIdDisplay"></span></p>
-  <p class="text-center mt-2"><a href="#" id="adminLink" class="text-blue-500 text-sm underline">Acesso Admin</a></p>
-</section>
-
-<!-- LOGIN -->
-<section id="loginView" class="hidden max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow">
-  <h2 class="text-xl font-bold text-yellow-600 text-center mb-4">Login Admin</h2>
-  <input type="email" id="adminEmail" class="border p-2 w-full rounded mb-2" placeholder="Email" />
-  <input type="password" id="adminPassword" class="border p-2 w-full rounded mb-4" placeholder="Senha" />
-  <button id="loginButton" class="bg-yellow-500 text-white w-full py-2 rounded font-bold">Entrar</button>
-</section>
-
-<!-- PAINEL ADMIN -->
-<section id="adminPanel" class="hidden max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
-  <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">Painel Admin</h2>
-  <div class="flex flex-wrap gap-2 mb-4 justify-center">
-    <input type="text" id="premioInput" class="border p-2 rounded" placeholder="Descrição do Prêmio" />
-    <select id="tipoSorteio" class="border p-2 rounded">
-      <option value="gratuito">Gratuito</option>
-      <option value="pago">Pago</option>
-    </select>
-    <input type="datetime-local" id="dataEncerramento" class="border p-2 rounded" />
-    <button id="abrirBtn" class="bg-green-500 text-white px-4 py-2 rounded">🔓 Abrir Sorteio</button>
-    <button id="encerrarBtn" class="bg-yellow-500 text-white px-4 py-2 rounded">🔒 Encerrar</button>
-    <button id="sortearBtn" class="bg-purple-600 text-white px-4 py-2 rounded">🎯 Sortear</button>
-    <button id="voltarBtn" class="bg-gray-600 text-white px-4 py-2 rounded">Voltar</button>
-    <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded">Sair</button>
+<div class="section">
+  <h2>Sobre a Instrutora</h2>
+  <div class="instructor">
+    <img src="https://via.placeholder.com/120" alt="Tai Botelho">
+    <p><strong>Tai Botelho</strong> é especialista com anos de experiência em salão. Fundadora do Espaço TB, ela ensina com amor, clareza e sem enrolação!</p>
   </div>
+</div>
 
-  <h3 class="text-lg font-bold text-green-700 mt-4 mb-2">Participantes</h3>
-  <table class="w-full text-sm table-auto border text-left text-gray-700">
-    <thead><tr><th>@Instagram</th><th>Chave Pix</th><th>WhatsApp</th></tr></thead>
-    <tbody id="adminParticipantsList"></tbody>
-  </table>
-</section>
+<div class="section">
+  <h2>Depoimentos de Alunas</h2>
+  <p class="testimonial">"Aprendi mais em 1 semana do que em meses tentando sozinha!" — Fernanda R.</p>
+  <p class="testimonial">"Já comecei a atender e recuperar meu investimento!" — Luciana B.</p>
+</div>
 
-<!-- SCRIPT -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
+<div class="cta">
+  <h2>Comece agora mesmo!</h2>
+  <p><strong>Promoção de Lançamento</strong> - Acesso imediato com garantia de 7 dias!</p>
+  <a href="https://hotmart.com">QUERO ME INSCREVER AGORA</a>
+</div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDZ2jr8QhV2p4IgcN2x-_fKBv3yeH7mUQU",
-  authDomain: "smart-5a1c5.firebaseapp.com",
-  projectId: "smart-5a1c5",
-  storageBucket: "smart-5a1c5.appspot.com",
-  messagingSenderId: "138657213190",
-  appId: "1:138657213190:web:1652d65b2d6b2d7aefcc87"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// Splash
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    document.getElementById("splashScreen").style.display = "none";
-    showView(mainView);
-  }, 1500);
-});
-
-// Views
-const mainView = document.getElementById("mainView");
-const loginView = document.getElementById("loginView");
-const adminPanel = document.getElementById("adminPanel");
-const showView = v => [mainView, loginView, adminPanel].forEach(s => s.classList.add("hidden")) || v.classList.remove("hidden");
-
-// UID
-const userId = localStorage.getItem("userId") || Math.random().toString(36).substr(2, 9);
-localStorage.setItem("userId", userId);
-document.getElementById("userIdDisplay").textContent = userId;
-
-// Login
-onAuthStateChanged(auth, async user => {
-  if (user && user.emailVerified !== false) {
-    showView(adminPanel);
-    carregarParticipantesAdmin();
-  }
-});
-document.getElementById("adminLink").onclick = e => { e.preventDefault(); showView(loginView); };
-document.getElementById("loginButton").onclick = async () => {
-  const email = adminEmail.value;
-  const pass = adminPassword.value;
-  try { await signInWithEmailAndPassword(auth, email, pass); showView(adminPanel); } catch (e) { alert("Erro: " + e.message); }
-};
-document.getElementById("logoutButton").onclick = () => { signOut(auth); showView(mainView); };
-document.getElementById("voltarBtn").onclick = () => showView(mainView);
-
-// Status
-async function verificarStatus() {
-  const snap = await getDoc(doc(db, "sorteio", "status"));
-  const dados = snap.exists() && snap.data();
-  const status = dados?.ativo;
-  document.getElementById("statusText").textContent = status ? "Inscrições Abertas" : "Encerradas";
-  document.getElementById("countdown").textContent = dados?.encerramento ? new Date(dados.encerramento).toLocaleString() : "--:--";
-  const ganhadorSnap = await getDoc(doc(db, "sorteio", "ganhador"));
-  const ganhadorDiv = document.getElementById("ganhadorDisplay");
-  if (!status && ganhadorSnap.exists()) {
-    ganhadorDiv.classList.remove("hidden");
-    document.getElementById("ganhadorText").textContent = `${ganhadorSnap.data().instagram}`;
-  } else {
-    ganhadorDiv.classList.add("hidden");
-  }
-  return dados;
-}
-async function verificarPremio() {
-  const snap = await getDoc(doc(db, "sorteio", "status"));
-  document.getElementById("premioText").textContent = snap.exists() ? snap.data().premio || "Não informado" : "Não informado";
-}
-verificarStatus();
-verificarPremio();
-
-// Inscrição
-document.getElementById("registerButton").onclick = async () => {
-  const status = await verificarStatus();
-  if (!status?.ativo) return alert("Inscrições encerradas.");
-  if (status.tipo === "pago") return alert("Esse sorteio é pago. Aguarde o Pix para validar.");
-  const instagram = instagramHandle.value.trim();
-  const chavePix = pixKey.value.trim();
-  const whatsapp = whatsappNumber.value.trim();
-  if (!instagram || !chavePix || !whatsapp) return alert("Preencha todos os campos.");
-  await setDoc(doc(db, "participantes", userId), {
-    instagram, chavePix, whatsapp, data: new Date().toISOString()
-  });
-  document.getElementById("comprovanteBtn").style.display = "block";
-  alert("Inscrição confirmada!");
-};
-
-// Comprovante
-document.getElementById("comprovanteBtn").onclick = () => {
-  alert(`✅ Comprovante\nID: ${userId}\nPrêmio: ${document.getElementById("premioText").textContent}\nInscrição efetuada com sucesso!`);
-};
-
-// Participantes admin
-async function carregarParticipantesAdmin() {
-  const snap = await getDocs(collection(db, "participantes"));
-  const tbody = document.getElementById("adminParticipantsList");
-  tbody.innerHTML = "";
-  snap.forEach(doc => {
-    const d = doc.data();
-    tbody.innerHTML += `<tr><td>${d.instagram}</td><td>${d.chavePix}</td><td>${d.whatsapp}</td></tr>`;
-  });
-}
-
-// Admin ações
-document.getElementById("abrirBtn").onclick = async () => {
-  const data = document.getElementById("dataEncerramento").value;
-  const premio = document.getElementById("premioInput").value;
-  const tipo = document.getElementById("tipoSorteio").value;
-  if (!data || !premio) return alert("Preencha todos os campos.");
-  await setDoc(doc(db, "sorteio", "status"), {
-    ativo: true,
-    encerramento: data,
-    premio,
-    tipo
-  });
-  alert("Sorteio aberto.");
-  verificarStatus();
-  verificarPremio();
-};
-document.getElementById("encerrarBtn").onclick = async () => {
-  await updateDoc(doc(db, "sorteio", "status"), { ativo: false });
-  alert("Sorteio encerrado.");
-  verificarStatus();
-};
-document.getElementById("sortearBtn").onclick = async () => {
-  const snap = await getDocs(collection(db, "participantes"));
-  const lista = snap.docs;
-  if (!lista.length) return alert("Sem participantes.");
-  const ganhador = lista[Math.floor(Math.random() * lista.length)].data();
-  await setDoc(doc(db, "sorteio", "ganhador"), ganhador);
-  alert(`🎉 Ganhador: ${ganhador.instagram}`);
-  verificarStatus();
-};
-</script>
 </body>
 </html>
