@@ -1,236 +1,181 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>pix.com - Sorteio Pix</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <title>Jogo de Alfabetização</title>
   <style>
-    #splashScreen {
-      position: fixed;
-      inset: 0;
-      background-color: #1e40af;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      font-weight: bold;
-      z-index: 50;
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
     }
-    #comprovanteBtn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #10b981;
+    .tela { display: none; height: 100vh; padding: 20px; }
+    .ativa { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+    /* SPLASH */
+    #splash {
+      background: #0077b6;
       color: white;
-      padding: 10px 16px;
-      border-radius: 9999px;
-      font-weight: bold;
-      display: none;
-      z-index: 40;
+      font-size: 28px;
     }
+
+    /* MENU */
+    #menu {
+      background: #f0f9ff;
+      font-size: 24px;
+    }
+
+    /* BOTÕES */
+    button {
+      background: #0077b6;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      margin: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 20px;
+      transition: 0.3s;
+    }
+    button:hover { background: #00b4d8; }
+
+    /* OPÇÕES */
+    .opcao {
+      background: #ff6b6b;
+      color: white;
+      padding: 15px 25px;
+      margin: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 22px;
+    }
+    .opcao:hover { background: #ff9f43; }
+
+    #resultado { font-size: 22px; margin-top: 15px; font-weight: bold; }
   </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans">
-
-<!-- SPLASH SCREEN -->
-<div id="splashScreen">pix.com</div>
-
-<!-- BOTÃO COMPROVANTE -->
-<button id="comprovanteBtn">📄 Ver Comprovante</button>
-
-<!-- TELA PRINCIPAL -->
-<section id="mainView" class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow hidden">
-  <h1 class="text-2xl font-bold text-blue-600 mb-2 text-center">pix.com - Sorteio Pix</h1>
-  <p class="text-center mb-1">Inscreva-se e concorra ao prêmio abaixo:</p>
-  <p class="text-center text-green-700 font-semibold mb-1">🎁 Prêmio: <span id="premioText">Carregando...</span></p>
-  <p class="text-center text-yellow-600 font-semibold">Status: <span id="statusText">Carregando...</span></p>
-  <p class="text-center text-red-600 mb-3">Encerramento: <span id="countdown">--:--</span></p>
-
-  <input type="text" id="instagramHandle" class="border p-2 w-full rounded mb-2" placeholder="@seuInstagram" />
-  <input type="text" id="pixKey" class="border p-2 w-full rounded mb-2" placeholder="Chave Pix" />
-  <input type="text" id="whatsappNumber" class="border p-2 w-full rounded mb-2" placeholder="WhatsApp com DDD" />
-  <button id="registerButton" class="bg-blue-500 hover:bg-blue-600 text-white w-full py-2 rounded font-bold">Quero Participar</button>
-
-  <p id="ganhadorDisplay" class="text-center text-sm text-purple-700 mt-4 hidden">🎉 Último Ganhador: <span id="ganhadorText"></span></p>
-
-  <p class="text-xs text-gray-500 mt-3">Seu ID: <span id="userIdDisplay"></span></p>
-  <p class="text-center mt-2"><a href="#" id="adminLink" class="text-blue-500 text-sm underline">Acesso Admin</a></p>
-</section>
-
-<!-- LOGIN -->
-<section id="loginView" class="hidden max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow">
-  <h2 class="text-xl font-bold text-yellow-600 text-center mb-4">Login Admin</h2>
-  <input type="email" id="adminEmail" class="border p-2 w-full rounded mb-2" placeholder="Email" />
-  <input type="password" id="adminPassword" class="border p-2 w-full rounded mb-4" placeholder="Senha" />
-  <button id="loginButton" class="bg-yellow-500 text-white w-full py-2 rounded font-bold">Entrar</button>
-</section>
-
-<!-- PAINEL ADMIN -->
-<section id="adminPanel" class="hidden max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
-  <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">Painel Admin</h2>
-  <div class="flex flex-wrap gap-2 mb-4 justify-center">
-    <input type="text" id="premioInput" class="border p-2 rounded" placeholder="Descrição do Prêmio" />
-    <select id="tipoSorteio" class="border p-2 rounded">
-      <option value="gratuito">Gratuito</option>
-      <option value="pago">Pago</option>
-    </select>
-    <input type="datetime-local" id="dataEncerramento" class="border p-2 rounded" />
-    <button id="abrirBtn" class="bg-green-500 text-white px-4 py-2 rounded">🔓 Abrir Sorteio</button>
-    <button id="encerrarBtn" class="bg-yellow-500 text-white px-4 py-2 rounded">🔒 Encerrar</button>
-    <button id="sortearBtn" class="bg-purple-600 text-white px-4 py-2 rounded">🎯 Sortear</button>
-    <button id="voltarBtn" class="bg-gray-600 text-white px-4 py-2 rounded">Voltar</button>
-    <button id="logoutButton" class="bg-red-600 text-white px-4 py-2 rounded">Sair</button>
+<body>
+  <!-- SPLASH -->
+  <div id="splash" class="tela ativa">
+    <h1>🎉 Bem-vindo 🎉</h1>
+    <p>Eduque seu filho de forma divertida</p>
   </div>
 
-  <h3 class="text-lg font-bold text-green-700 mt-4 mb-2">Participantes</h3>
-  <table class="w-full text-sm table-auto border text-left text-gray-700">
-    <thead><tr><th>@Instagram</th><th>Chave Pix</th><th>WhatsApp</th></tr></thead>
-    <tbody id="adminParticipantsList"></tbody>
-  </table>
-</section>
+  <!-- MENU -->
+  <div id="menu" class="tela">
+    <h2>Escolha uma fase</h2>
+    <button onclick="iniciarFase('alfabeto')">🔤 Alfabeto</button>
+    <button onclick="iniciarFase('vogais')">🅰️ Vogais</button>
+    <button onclick="iniciarFase('consoantes')">🅱️ Consoantes</button>
+    <button onclick="iniciarFase('silabas')">🔡 Sílabas</button>
+  </div>
 
-<!-- SCRIPT -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
+  <!-- FASE DE PERGUNTAS -->
+  <div id="fase" class="tela">
+    <h2 id="tituloFase"></h2>
+    <h3 id="pergunta"></h3>
+    <div id="opcoes"></div>
+    <div id="resultado"></div>
+    <button onclick="voltarMenu()">⬅️ Voltar</button>
+  </div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDZ2jr8QhV2p4IgcN2x-_fKBv3yeH7mUQU",
-  authDomain: "smart-5a1c5.firebaseapp.com",
-  projectId: "smart-5a1c5",
-  storageBucket: "smart-5a1c5.appspot.com",
-  messagingSenderId: "138657213190",
-  appId: "1:138657213190:web:1652d65b2d6b2d7aefcc87"
-};
+  <script>
+    function mostrarTela(id) {
+      document.querySelectorAll(".tela").forEach(t => t.classList.remove("ativa"));
+      document.getElementById(id).classList.add("ativa");
+    }
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    // SPLASH → MENU
+    window.onload = () => {
+      setTimeout(() => { mostrarTela("menu"); }, 3000);
+    };
 
-// Splash
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    document.getElementById("splashScreen").style.display = "none";
-    showView(mainView);
-  }, 1500);
-});
+    // Banco de perguntas
+    const fases = {
+      alfabeto: {
+        titulo: "🔤 Fase: Alfabeto",
+        perguntas: [
+          { pergunta: "Qual é a letra A?", opcoes: ["A","B","C"], resposta: "A" },
+          { pergunta: "Qual é a letra D?", opcoes: ["C","D","E"], resposta: "D" },
+          { pergunta: "Qual é a letra Z?", opcoes: ["X","Y","Z"], resposta: "Z" }
+        ]
+      },
+      vogais: {
+        titulo: "🅰️ Fase: Vogais",
+        perguntas: [
+          { pergunta: "Qual vogal completa: B _ LA?", opcoes: ["A","E","I"], resposta: "A" },
+          { pergunta: "Qual vogal completa: S _ PO?", opcoes: ["A","E","O"], resposta: "O" },
+          { pergunta: "Qual vogal completa: M _ LE?", opcoes: ["A","I","E"], resposta: "I" }
+        ]
+      },
+      consoantes: {
+        titulo: "🅱️ Fase: Consoantes",
+        perguntas: [
+          { pergunta: "Qual consoante completa: _ ASA?", opcoes: ["C","M","T"], resposta: "C" },
+          { pergunta: "Qual consoante completa: _ OLA?", opcoes: ["B","J","R"], resposta: "B" },
+          { pergunta: "Qual consoante completa: _ APA?", opcoes: ["L","S","T"], resposta: "L" }
+        ]
+      },
+      silabas: {
+        titulo: "🔡 Fase: Sílabas",
+        perguntas: [
+          { pergunta: "B + A = ?", opcoes: ["BA","BO","BE"], resposta: "BA" },
+          { pergunta: "C + E = ?", opcoes: ["CA","CE","CO"], resposta: "CE" },
+          { pergunta: "P + O = ?", opcoes: ["PA","PO","PE"], resposta: "PO" }
+        ]
+      }
+    };
 
-// Views
-const mainView = document.getElementById("mainView");
-const loginView = document.getElementById("loginView");
-const adminPanel = document.getElementById("adminPanel");
-const showView = v => [mainView, loginView, adminPanel].forEach(s => s.classList.add("hidden")) || v.classList.remove("hidden");
+    let faseAtual = null;
+    let indice = 0;
 
-// UID
-const userId = localStorage.getItem("userId") || Math.random().toString(36).substr(2, 9);
-localStorage.setItem("userId", userId);
-document.getElementById("userIdDisplay").textContent = userId;
+    function iniciarFase(nomeFase) {
+      faseAtual = fases[nomeFase];
+      indice = 0;
+      document.getElementById("tituloFase").innerText = faseAtual.titulo;
+      carregarPergunta();
+      mostrarTela("fase");
+    }
 
-// Login
-onAuthStateChanged(auth, async user => {
-  if (user && user.emailVerified !== false) {
-    showView(adminPanel);
-    carregarParticipantesAdmin();
-  }
-});
-document.getElementById("adminLink").onclick = e => { e.preventDefault(); showView(loginView); };
-document.getElementById("loginButton").onclick = async () => {
-  const email = adminEmail.value;
-  const pass = adminPassword.value;
-  try { await signInWithEmailAndPassword(auth, email, pass); showView(adminPanel); } catch (e) { alert("Erro: " + e.message); }
-};
-document.getElementById("logoutButton").onclick = () => { signOut(auth); showView(mainView); };
-document.getElementById("voltarBtn").onclick = () => showView(mainView);
+    function carregarPergunta() {
+      let q = faseAtual.perguntas[indice];
+      document.getElementById("pergunta").innerText = q.pergunta;
 
-// Status
-async function verificarStatus() {
-  const snap = await getDoc(doc(db, "sorteio", "status"));
-  const dados = snap.exists() && snap.data();
-  const status = dados?.ativo;
-  document.getElementById("statusText").textContent = status ? "Inscrições Abertas" : "Encerradas";
-  document.getElementById("countdown").textContent = dados?.encerramento ? new Date(dados.encerramento).toLocaleString() : "--:--";
-  const ganhadorSnap = await getDoc(doc(db, "sorteio", "ganhador"));
-  const ganhadorDiv = document.getElementById("ganhadorDisplay");
-  if (!status && ganhadorSnap.exists()) {
-    ganhadorDiv.classList.remove("hidden");
-    document.getElementById("ganhadorText").textContent = `${ganhadorSnap.data().instagram}`;
-  } else {
-    ganhadorDiv.classList.add("hidden");
-  }
-  return dados;
-}
-async function verificarPremio() {
-  const snap = await getDoc(doc(db, "sorteio", "status"));
-  document.getElementById("premioText").textContent = snap.exists() ? snap.data().premio || "Não informado" : "Não informado";
-}
-verificarStatus();
-verificarPremio();
+      let opcoesDiv = document.getElementById("opcoes");
+      opcoesDiv.innerHTML = "";
+      q.opcoes.forEach(opcao => {
+        let btn = document.createElement("div");
+        btn.className = "opcao";
+        btn.innerText = opcao;
+        btn.onclick = () => verificarResposta(opcao);
+        opcoesDiv.appendChild(btn);
+      });
 
-// Inscrição
-document.getElementById("registerButton").onclick = async () => {
-  const status = await verificarStatus();
-  if (!status?.ativo) return alert("Inscrições encerradas.");
-  if (status.tipo === "pago") return alert("Esse sorteio é pago. Aguarde o Pix para validar.");
-  const instagram = instagramHandle.value.trim();
-  const chavePix = pixKey.value.trim();
-  const whatsapp = whatsappNumber.value.trim();
-  if (!instagram || !chavePix || !whatsapp) return alert("Preencha todos os campos.");
-  await setDoc(doc(db, "participantes", userId), {
-    instagram, chavePix, whatsapp, data: new Date().toISOString()
-  });
-  document.getElementById("comprovanteBtn").style.display = "block";
-  alert("Inscrição confirmada!");
-};
+      document.getElementById("resultado").innerText = "";
+    }
 
-// Comprovante
-document.getElementById("comprovanteBtn").onclick = () => {
-  alert(`✅ Comprovante\nID: ${userId}\nPrêmio: ${document.getElementById("premioText").textContent}\nInscrição efetuada com sucesso!`);
-};
+    function verificarResposta(opcao) {
+      let q = faseAtual.perguntas[indice];
+      if (opcao === q.resposta) {
+        document.getElementById("resultado").innerText = "✅ Acertou!";
+        setTimeout(() => {
+          indice++;
+          if (indice < faseAtual.perguntas.length) {
+            carregarPergunta();
+          } else {
+            document.getElementById("pergunta").innerText = "🎉 Você completou esta fase!";
+            document.getElementById("opcoes").innerHTML = "";
+            document.getElementById("resultado").innerText = "";
+          }
+        }, 1000);
+      } else {
+        document.getElementById("resultado").innerText = "❌ Ops! Tente de novo!";
+      }
+    }
 
-// Participantes admin
-async function carregarParticipantesAdmin() {
-  const snap = await getDocs(collection(db, "participantes"));
-  const tbody = document.getElementById("adminParticipantsList");
-  tbody.innerHTML = "";
-  snap.forEach(doc => {
-    const d = doc.data();
-    tbody.innerHTML += `<tr><td>${d.instagram}</td><td>${d.chavePix}</td><td>${d.whatsapp}</td></tr>`;
-  });
-}
-
-// Admin ações
-document.getElementById("abrirBtn").onclick = async () => {
-  const data = document.getElementById("dataEncerramento").value;
-  const premio = document.getElementById("premioInput").value;
-  const tipo = document.getElementById("tipoSorteio").value;
-  if (!data || !premio) return alert("Preencha todos os campos.");
-  await setDoc(doc(db, "sorteio", "status"), {
-    ativo: true,
-    encerramento: data,
-    premio,
-    tipo
-  });
-  alert("Sorteio aberto.");
-  verificarStatus();
-  verificarPremio();
-};
-document.getElementById("encerrarBtn").onclick = async () => {
-  await updateDoc(doc(db, "sorteio", "status"), { ativo: false });
-  alert("Sorteio encerrado.");
-  verificarStatus();
-};
-document.getElementById("sortearBtn").onclick = async () => {
-  const snap = await getDocs(collection(db, "participantes"));
-  const lista = snap.docs;
-  if (!lista.length) return alert("Sem participantes.");
-  const ganhador = lista[Math.floor(Math.random() * lista.length)].data();
-  await setDoc(doc(db, "sorteio", "ganhador"), ganhador);
-  alert(`🎉 Ganhador: ${ganhador.instagram}`);
-  verificarStatus();
-};
-</script>
+    function voltarMenu() {
+      mostrarTela("menu");
+    }
+  </script>
 </body>
 </html>
