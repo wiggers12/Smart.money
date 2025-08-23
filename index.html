@@ -4,210 +4,289 @@
   <meta charset="UTF-8">
   <title>Jogo de Alfabetização</title>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      text-align: center;
-    }
-    .tela { display: none; height: 100vh; padding: 20px; }
-    .ativa { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-
-    /* SPLASH */
-    #splash {
-      background: #0077b6;
-      color: white;
-      font-size: 28px;
-    }
-
-    /* MENU */
-    #menu {
       background: #f0f9ff;
-      font-size: 24px;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* BOTÕES */
+    .tela {
+      display: none;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+    .ativa { display: flex; }
+
+    /* Splash */
+    #splash {
+      background: linear-gradient(135deg, #0077b6, #00b4d8);
+      color: white;
+      font-size: 26px;
+      animation: fadein 1.5s;
+    }
+
+    @keyframes fadein {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Menu */
+    #menu, #menuSilabas {
+      background: #ffffff;
+    }
+
     button {
       background: #0077b6;
       color: white;
       border: none;
       padding: 15px 30px;
       margin: 10px;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       font-size: 20px;
       transition: 0.3s;
+      width: 80%;
+      max-width: 300px;
     }
     button:hover { background: #00b4d8; }
 
-    /* OPÇÕES (cards) */
-    #opcoes {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 15px;
-      width: 100%;
-      max-width: 400px;
-      margin: 20px auto;
+    /* Fase */
+    #fase {
+      background: #eaf4f9;
     }
 
-    .opcao {
-      background: #ff6b6b;
-      color: white;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 80px;
-      min-width: 120px;
-      transition: 0.3s;
+    #pergunta {
+      font-size: 6vw; /* responsivo */
+      font-weight: bold;
+      margin-bottom: 20px;
+      animation: fadein 1s;
     }
-    .opcao:hover { background: #ff9f43; }
 
-    #resultado { font-size: 22px; margin-top: 15px; font-weight: bold; }
+    #subtexto {
+      font-size: 20px;
+      color: #555;
+      margin-bottom: 20px;
+      animation: fadein 1s;
+    }
   </style>
 </head>
 <body>
-  <!-- SPLASH -->
+  <!-- Splash -->
   <div id="splash" class="tela ativa">
-    <h1>🎉 Bem-vindo 🎉</h1>
+    <h1>🎉 Bem-vindo ao Jogo de Alfabetização 🎉</h1>
     <p>Carregando...</p>
   </div>
 
-  <!-- MENU -->
+  <!-- Menu -->
   <div id="menu" class="tela">
     <h2>Escolha uma fase</h2>
     <button onclick="iniciarFase('alfabeto')">🔤 Alfabeto</button>
     <button onclick="iniciarFase('vogais')">🅰️ Vogais</button>
     <button onclick="iniciarFase('consoantes')">🅱️ Consoantes</button>
-    <button onclick="iniciarFase('silabas')">🔡 Sílabas</button>
+    <button onclick="menuSilabas()">🔡 Sílabas</button>
   </div>
 
-  <!-- FASE DE PERGUNTAS -->
+  <!-- Menu de Sílabas -->
+  <div id="menuSilabas" class="tela">
+    <h2>Escolha a quantidade de sílabas</h2>
+    <div>
+      <button onclick="iniciarSilabas(2)">2 Sílabas</button>
+      <button onclick="iniciarSilabas(3)">3 Sílabas</button>
+      <button onclick="iniciarSilabas(4)">4 Sílabas</button>
+      <button onclick="iniciarSilabas(5)">5 Sílabas</button>
+      <button onclick="iniciarSilabas(6)">6 Sílabas</button>
+      <button onclick="iniciarSilabas(7)">7 Sílabas</button>
+      <button onclick="iniciarSilabas(8)">8 Sílabas</button>
+    </div>
+    <button onclick="voltarMenu()">⬅️ Voltar</button>
+  </div>
+
+  <!-- Fase -->
   <div id="fase" class="tela">
     <h2 id="tituloFase"></h2>
-    <h3 id="pergunta"></h3>
-    <div id="opcoes"></div>
-    <div id="resultado"></div>
+    <div id="pergunta"></div>
+    <div id="subtexto"></div>
+    <button id="btnProxima" onclick="proximaSilaba()" style="display:none">➡️ Próxima sílaba</button>
     <button onclick="voltarMenu()">⬅️ Voltar</button>
   </div>
 
   <script>
+    // Controle de telas
     function mostrarTela(id) {
       document.querySelectorAll(".tela").forEach(t => t.classList.remove("ativa"));
       document.getElementById(id).classList.add("ativa");
     }
 
-    // SPLASH → MENU
+    // Splash → Menu
     window.onload = () => {
       setTimeout(() => { mostrarTela("menu"); }, 3000);
     };
 
-    // Gera o alfabeto completo
+    // Dicionário de pronúncia das letras
+    const pronunciaLetras = {
+      A: "á", B: "bê", C: "cê", D: "dê", E: "é", F: "éfe",
+      G: "gê", H: "agá", I: "i", J: "jóta", K: "cá", L: "éle",
+      M: "ême", N: "êne", O: "ó", P: "pê", Q: "quê", R: "érre",
+      S: "ésse", T: "tê", U: "u", V: "vê", W: "dáblio",
+      X: "xis", Y: "ípsilon", Z: "zê"
+    };
+
+    // Dados
     const alfabeto = Array.from(Array(26)).map((_, i) => String.fromCharCode(65 + i));
     const vogais = ["A", "E", "I", "O", "U"];
     const consoantes = alfabeto.filter(l => !vogais.includes(l));
 
-    // Gera perguntas do alfabeto
-    const perguntasAlfabeto = alfabeto.map(l => ({
-      pergunta: `Qual é a letra ${l}?`,
-      opcoes: embaralhar([l, ...pegarDistratores(l)]),
-      resposta: l
-    }));
-
-    // Perguntas das vogais
-    const perguntasVogais = vogais.map(v => ({
-      pergunta: `Qual é a vogal ${v}?`,
-      opcoes: embaralhar([v, ...vogais.filter(x => x !== v).slice(0,2)]),
-      resposta: v
-    }));
-
-    // Perguntas das consoantes
-    const perguntasConsoantes = consoantes.map(c => ({
-      pergunta: `Qual é a consoante ${c}?`,
-      opcoes: embaralhar([c, ...consoantes.filter(x => x !== c).slice(0,2)]),
-      resposta: c
-    }));
-
-    // Perguntas das sílabas (C + V)
-    const perguntasSilabas = [];
-    consoantes.forEach(c => {
-      vogais.forEach(v => {
-        perguntasSilabas.push({
-          pergunta: `${c} + ${v} = ?`,
-          opcoes: embaralhar([c+v, c+"A", c+"E"]),
-          resposta: c+v
-        });
-      });
-    });
-
-    // Banco de fases
-    const fases = {
-      alfabeto: { titulo: "🔤 Fase: Alfabeto", perguntas: perguntasAlfabeto },
-      vogais: { titulo: "🅰️ Fase: Vogais", perguntas: perguntasVogais },
-      consoantes: { titulo: "🅱️ Fase: Consoantes", perguntas: perguntasConsoantes },
-      silabas: { titulo: "🔡 Fase: Sílabas", perguntas: perguntasSilabas }
+    // Palavras reais para sílabas de 3 a 8
+    const palavrasSilabas = {
+      3: [
+        { partes: ["BO","LA"], palavra: "BOLA" },
+        { partes: ["CA","SA"], palavra: "CASA" },
+        { partes: ["PA","TO"], palavra: "PATO" }
+      ],
+      4: [
+        { partes: ["CA","DE","RA"], palavra: "CADEIRA" },
+        { partes: ["JA","NE","LA"], palavra: "JANELA" }
+      ],
+      5: [
+        { partes: ["A","MA","RE","LO"], palavra: "AMARELO" },
+        { partes: ["MA","CA","CO"], palavra: "MACACO" }
+      ],
+      6: [
+        { partes: ["TE","LE","VI","SOR"], palavra: "TELEVISOR" }
+      ],
+      7: [
+        { partes: ["HE","LI","COP","TE","RO"], palavra: "HELICOPTERO" }
+      ],
+      8: [
+        { partes: ["MA","RA","VI","LHO","SO"], palavra: "MARAVILHOSO" }
+      ]
     };
 
-    // Helpers
-    function embaralhar(arr) {
-      return arr.sort(() => Math.random() - 0.5);
-    }
-
-    function pegarDistratores(correta) {
-      return alfabeto.filter(l => l !== correta).sort(() => Math.random() - 0.5).slice(0,2);
-    }
-
-    // Jogo
-    let faseAtual = null;
-    let indice = 0;
-
-    function iniciarFase(nomeFase) {
-      faseAtual = fases[nomeFase];
-      indice = 0;
-      document.getElementById("tituloFase").innerText = faseAtual.titulo;
-      carregarPergunta();
-      mostrarTela("fase");
-    }
-
-    function carregarPergunta() {
-      let q = faseAtual.perguntas[indice];
-      document.getElementById("pergunta").innerText = q.pergunta;
-
-      let opcoesDiv = document.getElementById("opcoes");
-      opcoesDiv.innerHTML = "";
-      q.opcoes.forEach(opcao => {
-        let btn = document.createElement("div");
-        btn.className = "opcao";
-        btn.innerText = opcao;
-        btn.onclick = () => verificarResposta(opcao);
-        opcoesDiv.appendChild(btn);
-      });
-
-      document.getElementById("resultado").innerText = "";
-    }
-
-    function verificarResposta(opcao) {
-      let q = faseAtual.perguntas[indice];
-      if (opcao === q.resposta) {
-        document.getElementById("resultado").innerText = "✅ Acertou!";
-        setTimeout(() => {
-          indice++;
-          if (indice < faseAtual.perguntas.length) {
-            carregarPergunta();
-          } else {
-            document.getElementById("pergunta").innerText = "🎉 Você completou esta fase!";
-            document.getElementById("opcoes").innerHTML = "";
-            document.getElementById("resultado").innerText = "";
-          }
-        }, 800);
+    // Gera lista de sílabas
+    function gerarSilabas(qtd) {
+      if (qtd === 2) {
+        const consoantesBase = ["B","C","D","F","G","L","M","P","R","S","T"];
+        const vogaisBase = ["A","E","I","O","U"];
+        let silabas = [];
+        consoantesBase.forEach(c => {
+          vogaisBase.forEach(v => {
+            silabas.push({ partes: [c, v], palavra: c+v });
+          });
+        });
+        return silabas;
       } else {
-        document.getElementById("resultado").innerText = "❌ Tente de novo!";
+        return palavrasSilabas[qtd] || [];
+      }
+    }
+
+    // Variáveis do jogo
+    let lista = [];
+    let indice = 0;
+    let fase = "";
+    let qtdSilabas = 2;
+
+    function iniciarFase(nome) {
+      fase = nome;
+      indice = 0;
+      document.getElementById("btnProxima").style.display = "none";
+
+      if (fase === "alfabeto") { lista = alfabeto; }
+      if (fase === "vogais") { lista = vogais; }
+      if (fase === "consoantes") { lista = consoantes; }
+
+      document.getElementById("tituloFase").innerText =
+        (fase === "alfabeto" ? "🔤 Alfabeto" :
+         fase === "vogais" ? "🅰️ Vogais" :
+         fase === "consoantes" ? "🅱️ Consoantes" : "");
+
+      mostrarTela("fase");
+      rodarSequencia();
+    }
+
+    function menuSilabas() {
+      mostrarTela("menuSilabas");
+    }
+
+    function iniciarSilabas(qtd) {
+      fase = "silabas";
+      indice = 0;
+      qtdSilabas = qtd;
+      lista = gerarSilabas(qtd);
+
+      document.getElementById("tituloFase").innerText = `🔡 Fase: ${qtd} Sílabas`;
+      mostrarTela("fase");
+      mostrarSilaba();
+    }
+
+    function mostrarSilaba() {
+      if (indice < lista.length) {
+        let item = lista[indice];
+        document.getElementById("pergunta").innerText =
+          `${item.partes.join(" + ")} = ${item.palavra}`;
+        document.getElementById("subtexto").innerText = "Repita comigo!";
+        document.getElementById("btnProxima").style.display = "inline-block";
+
+        // Fala só as partes separadas
+        falar(item.partes.join(" e o "), 0.8);
+
+      } else {
+        document.getElementById("pergunta").innerText = "🎉 Você terminou esta fase!";
+        document.getElementById("subtexto").innerText = "";
+        document.getElementById("btnProxima").style.display = "none";
+        falar("Parabéns, você completou a fase!", 0.9);
+      }
+    }
+
+    function proximaSilaba() {
+      indice++;
+      mostrarSilaba();
+    }
+
+    function rodarSequencia() {
+      if (fase !== "silabas") {
+        if (indice < lista.length) {
+          let item = lista[indice];
+          document.getElementById("pergunta").innerText = item;
+          document.getElementById("subtexto").innerText = "Repita comigo!";
+          document.getElementById("btnProxima").style.display = "none";
+
+          let nome = pronunciaLetras[item] || item;
+
+          falar(`Esta é a letra ${nome}`, 0.9);
+          setTimeout(() => falar(`Esta é a letra ${nome}`, 0.9), 2000);
+
+          setTimeout(() => {
+            indice++;
+            rodarSequencia();
+          }, 4000);
+
+        } else {
+          document.getElementById("pergunta").innerText = "🎉 Você terminou esta fase!";
+          document.getElementById("subtexto").innerText = "";
+          falar("Parabéns, você completou a fase!", 0.9);
+        }
       }
     }
 
     function voltarMenu() {
       mostrarTela("menu");
+    }
+
+    // Fala com velocidade customizada
+    function falar(texto, velocidade = 0.6) {
+      let msg = new SpeechSynthesisUtterance(texto);
+      msg.lang = "pt-BR";
+      msg.rate = velocidade; 
+      msg.pitch = 1; 
+      window.speechSynthesis.cancel(); 
+      window.speechSynthesis.speak(msg);
     }
   </script>
 </body>
