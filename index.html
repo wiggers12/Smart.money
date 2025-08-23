@@ -39,15 +39,28 @@
     }
     button:hover { background: #00b4d8; }
 
-    /* OPÇÕES */
+    /* OPÇÕES (cards) */
+    #opcoes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      width: 100%;
+      max-width: 400px;
+      margin: 20px auto;
+    }
+
     .opcao {
       background: #ff6b6b;
       color: white;
-      padding: 15px 25px;
-      margin: 10px;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 80px;
+      min-width: 120px;
+      transition: 0.3s;
     }
     .opcao:hover { background: #ff9f43; }
 
@@ -58,7 +71,7 @@
   <!-- SPLASH -->
   <div id="splash" class="tela ativa">
     <h1>🎉 Bem-vindo 🎉</h1>
-    <p>Eduque seu filho de forma divertida</p>
+    <p>Carregando...</p>
   </div>
 
   <!-- MENU -->
@@ -90,42 +103,62 @@
       setTimeout(() => { mostrarTela("menu"); }, 3000);
     };
 
-    // Banco de perguntas
+    // Gera o alfabeto completo
+    const alfabeto = Array.from(Array(26)).map((_, i) => String.fromCharCode(65 + i));
+    const vogais = ["A", "E", "I", "O", "U"];
+    const consoantes = alfabeto.filter(l => !vogais.includes(l));
+
+    // Gera perguntas do alfabeto
+    const perguntasAlfabeto = alfabeto.map(l => ({
+      pergunta: `Qual é a letra ${l}?`,
+      opcoes: embaralhar([l, ...pegarDistratores(l)]),
+      resposta: l
+    }));
+
+    // Perguntas das vogais
+    const perguntasVogais = vogais.map(v => ({
+      pergunta: `Qual é a vogal ${v}?`,
+      opcoes: embaralhar([v, ...vogais.filter(x => x !== v).slice(0,2)]),
+      resposta: v
+    }));
+
+    // Perguntas das consoantes
+    const perguntasConsoantes = consoantes.map(c => ({
+      pergunta: `Qual é a consoante ${c}?`,
+      opcoes: embaralhar([c, ...consoantes.filter(x => x !== c).slice(0,2)]),
+      resposta: c
+    }));
+
+    // Perguntas das sílabas (C + V)
+    const perguntasSilabas = [];
+    consoantes.forEach(c => {
+      vogais.forEach(v => {
+        perguntasSilabas.push({
+          pergunta: `${c} + ${v} = ?`,
+          opcoes: embaralhar([c+v, c+"A", c+"E"]),
+          resposta: c+v
+        });
+      });
+    });
+
+    // Banco de fases
     const fases = {
-      alfabeto: {
-        titulo: "🔤 Fase: Alfabeto",
-        perguntas: [
-          { pergunta: "Qual é a letra A?", opcoes: ["A","B","C"], resposta: "A" },
-          { pergunta: "Qual é a letra D?", opcoes: ["C","D","E"], resposta: "D" },
-          { pergunta: "Qual é a letra Z?", opcoes: ["X","Y","Z"], resposta: "Z" }
-        ]
-      },
-      vogais: {
-        titulo: "🅰️ Fase: Vogais",
-        perguntas: [
-          { pergunta: "Qual vogal completa: B _ LA?", opcoes: ["A","E","I"], resposta: "A" },
-          { pergunta: "Qual vogal completa: S _ PO?", opcoes: ["A","E","O"], resposta: "O" },
-          { pergunta: "Qual vogal completa: M _ LE?", opcoes: ["A","I","E"], resposta: "I" }
-        ]
-      },
-      consoantes: {
-        titulo: "🅱️ Fase: Consoantes",
-        perguntas: [
-          { pergunta: "Qual consoante completa: _ ASA?", opcoes: ["C","M","T"], resposta: "C" },
-          { pergunta: "Qual consoante completa: _ OLA?", opcoes: ["B","J","R"], resposta: "B" },
-          { pergunta: "Qual consoante completa: _ APA?", opcoes: ["L","S","T"], resposta: "L" }
-        ]
-      },
-      silabas: {
-        titulo: "🔡 Fase: Sílabas",
-        perguntas: [
-          { pergunta: "B + A = ?", opcoes: ["BA","BO","BE"], resposta: "BA" },
-          { pergunta: "C + E = ?", opcoes: ["CA","CE","CO"], resposta: "CE" },
-          { pergunta: "P + O = ?", opcoes: ["PA","PO","PE"], resposta: "PO" }
-        ]
-      }
+      alfabeto: { titulo: "🔤 Fase: Alfabeto", perguntas: perguntasAlfabeto },
+      vogais: { titulo: "🅰️ Fase: Vogais", perguntas: perguntasVogais },
+      consoantes: { titulo: "🅱️ Fase: Consoantes", perguntas: perguntasConsoantes },
+      silabas: { titulo: "🔡 Fase: Sílabas", perguntas: perguntasSilabas }
     };
 
+    // Helpers
+    function embaralhar(arr) {
+      return arr.sort(() => Math.random() - 0.5);
+    }
+
+    function pegarDistratores(correta) {
+      return alfabeto.filter(l => l !== correta).sort(() => Math.random() - 0.5).slice(0,2);
+    }
+
+    // Jogo
     let faseAtual = null;
     let indice = 0;
 
@@ -167,9 +200,9 @@
             document.getElementById("opcoes").innerHTML = "";
             document.getElementById("resultado").innerText = "";
           }
-        }, 1000);
+        }, 800);
       } else {
-        document.getElementById("resultado").innerText = "❌ Ops! Tente de novo!";
+        document.getElementById("resultado").innerText = "❌ Tente de novo!";
       }
     }
 
