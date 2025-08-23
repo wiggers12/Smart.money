@@ -2,131 +2,69 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Jogo de Alfabetização • Plus</title>
+  <title>Jogo de Alfabetização • Quiz</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root{
-      --bg:#f0f9ff;
-      --card:#ffffff;
-      --primary:#0077b6;
-      --primary-2:#00b4d8;
-      --text:#0b2942;
-      --muted:#6b7280;
-      --good:#10b981;
-      --warn:#f59e0b;
-      --danger:#ef4444;
-      --shadow:0 8px 30px rgba(0,0,0,.08);
-      --radius:18px;
+      --bg:#f0f9ff; --card:#ffffff; --primary:#0077b6; --primary-2:#00b4d8;
+      --text:#0b2942; --muted:#6b7280; --good:#10b981; --warn:#f59e0b; --danger:#ef4444;
+      --shadow:0 8px 30px rgba(0,0,0,.08); --radius:18px;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:var(--text); background:linear-gradient(180deg,var(--bg),#fff);
-      display:flex; flex-direction:column;
-    }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0; font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text); background:linear-gradient(180deg,var(--bg),#fff); display:flex; flex-direction:column}
     .wrap{flex:1; display:flex; flex-direction:column}
     .tela{display:none; flex:1; align-items:center; justify-content:center; padding:20px}
     .tela.ativa{display:flex}
-    .container{
-      width:min(980px,100%); margin:0 auto; display:flex; flex-direction:column; gap:18px;
-      align-items:center; justify-content:center;
-    }
-    .card{
-      width:100%; background:var(--card); border-radius:var(--radius); padding:22px;
-      box-shadow:var(--shadow);
-    }
-    .center{display:flex; align-items:center; justify-content:center}
-    h1,h2,h3{margin:0}
-    h1{font-size:clamp(20px,4.5vw,36px)}
-    h2{font-size:clamp(18px,3.5vw,28px)}
+    .container{width:min(980px,100%); margin:0 auto; display:flex; flex-direction:column; gap:18px; align-items:center}
+    .card{width:100%; background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow)}
+    h1,h2,h3{margin:0} h1{font-size:clamp(20px,4.5vw,36px)} h2{font-size:clamp(18px,3.5vw,28px)}
     p{margin:0; color:var(--muted)}
-    /* Splash */
-    #splash{
-      background: radial-gradient(1200px 400px at 50% -10%, #c9f1ff 10%, transparent 60%),
-                  linear-gradient(135deg, var(--primary), var(--primary-2));
-      color:#fff; text-align:center; animation:fadein .8s ease;
-    }
-    .splash-title{font-weight:800; letter-spacing:.3px}
-    .splash-sub{opacity:.9}
-    .splash-actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:16px}
+    /* splash */
+    #splash{background:linear-gradient(135deg,var(--primary),var(--primary-2)); color:#fff; text-align:center}
     .logo{font-weight:900}
-
-    /* Botões */
-    button{
-      appearance:none; border:0; border-radius:14px; padding:14px 18px; cursor:pointer;
+    button{appearance:none; border:0; border-radius:14px; padding:14px 18px; cursor:pointer;
       background:var(--primary); color:#fff; font-weight:700; letter-spacing:.2px;
-      box-shadow:0 6px 16px rgba(0,119,182,.18); transition:.2s transform,.2s box-shadow,.2s background;
-    }
-    button:hover{transform:translateY(-1px); background:var(--primary-2)}
-    button:active{transform:translateY(0)}
-    .btn-outline{background:#fff; color:var(--primary); border:2px solid var(--primary)}
-    .btn-ghost{background:#f1f5f9; color:var(--text)}
-    .btn-danger{background:var(--danger)}
-    .btn-good{background:var(--good)}
-    .btn-warn{background:var(--warn)}
-
-    .grid{display:grid; gap:14px}
-    .grid.cols-2{grid-template-columns:repeat(2,1fr)}
-    .grid.cols-3{grid-template-columns:repeat(3,1fr)}
-    .grid.cols-4{grid-template-columns:repeat(4,1fr)}
-    @media (max-width:760px){
-      .grid.cols-4{grid-template-columns:repeat(2,1fr)}
-      .grid.cols-3{grid-template-columns:repeat(2,1fr)}
-      .grid.cols-2{grid-template-columns:1fr}
-    }
-
-    /* Fase */
-    .fase-title{display:flex; align-items:center; justify-content:space-between; gap:12px}
-    .big{
-      font-size:clamp(36px,10vw,70px); font-weight:900; letter-spacing:.5px; text-align:center;
-      padding:20px; border-radius:16px; background:#fafcff; border:2px dashed #e2e8f0;
-    }
+      box-shadow:0 6px 16px rgba(0,119,182,.18); transition:.2s transform,.2s background}
+    button:hover{transform:translateY(-1px); background:var(--primary-2)} button:active{transform:translateY(0)}
+    .btn-ghost{background:#f1f5f9; color:var(--text)} .btn-outline{background:#fff;color:var(--primary);border:2px solid var(--primary)}
+    .grid{display:grid; gap:14px} .grid.cols-2{grid-template-columns:repeat(2,1fr)} .grid.cols-3{grid-template-columns:repeat(3,1fr)}
+    @media (max-width:760px){.grid.cols-3{grid-template-columns:repeat(2,1fr)} .grid.cols-2{grid-template-columns:1fr}}
+    .big{font-size:clamp(36px,10vw,70px); font-weight:900; text-align:center; padding:16px; border-radius:16px; background:#fafcff; border:2px dashed #e2e8f0}
     .sub{font-size:clamp(16px,3.2vw,22px); color:var(--muted)}
-    .controls{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center}
     .row{display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap}
-    .pill{background:#eff6ff; color:#0369a1; padding:8px 12px; border-radius:999px; font-weight:700}
     .progress{height:10px; width:100%; background:#eef2f7; border-radius:999px; overflow:hidden}
     .progress>span{display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--primary),var(--primary-2))}
-    .muted{color:var(--muted)}
-    .kbd{
-      font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      background:#0b29420d; border:1px solid #0b294233; padding:.15rem .4rem; border-radius:6px; font-size:.9em;
-    }
-    .footer{opacity:.7; font-size:13px; text-align:center; padding:10px}
-
-    /* Toggle */
-    .toggle{display:inline-flex; align-items:center; gap:8px}
-    .toggle input{display:none}
-    .toggle .track{
-      width:54px;height:28px;border-radius:999px;background:#c7d2fe; position:relative; transition:.2s;
-    }
-    .toggle .thumb{
-      width:22px;height:22px;border-radius:50%; background:#fff; position:absolute; top:3px; left:3px; transition:.2s;
-      box-shadow:0 2px 8px rgba(0,0,0,.15)
-    }
-    .toggle input:checked + .track{background:#34d399}
-    .toggle input:checked + .track .thumb{left:29px}
-
-    /* Focus */
-    :focus-visible{outline:3px solid #93c5fd; outline-offset:2px; border-radius:12px}
-
-    @keyframes fadein{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:translateY(0)}}
+    .pill{background:#eff6ff; color:#0369a1; padding:8px 12px; border-radius:999px; font-weight:700}
+    .stars{display:flex; gap:6px} .star{font-size:26px; filter:grayscale(1) opacity(.6)} .star.on{filter:none}
+    /* opções do quiz */
+    .opcoes{display:grid; gap:12px; grid-template-columns:repeat(2,1fr)}
+    .op{padding:14px; border-radius:12px; background:#fff; border:2px solid #e2e8f0; text-align:center; font-size:clamp(20px,5vw,32px); cursor:pointer}
+    .op:hover{border-color:#cbd5e1}
+    .op.certa{border-color:#10b981; background:#ecfdf5} .op.errada{border-color:#ef4444; background:#fef2f2}
+    /* DnD */
+    .drop{min-height:72px; background:#f8fafc; border:2px dashed #cbd5e1; border-radius:12px; padding:10px; display:flex; gap:8px; align-items:center; justify-content:center; flex-wrap:wrap}
+    .chip{display:inline-flex; align-items:center; justify-content:center; padding:10px 14px; border-radius:12px; background:#e0f2fe; border:2px solid #bae6fd; font-weight:800; cursor:grab; user-select:none}
+    .chip[draggable="true"]:active{cursor:grabbing}
+    /* confete */
+    #confetti{pointer-events:none; position:fixed; inset:0; overflow:hidden}
+    .c{position:absolute; width:10px; height:14px; opacity:.9; transform:translate(-50%,-50%) rotate(0deg)}
+    @keyframes fall{to{transform:translate(var(--tx,0),110vh) rotate(720deg)}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <!-- SPLASH -->
     <section id="splash" class="tela ativa">
-      <div class="container center" style="max-width:820px">
+      <div class="container" style="max-width:820px">
         <div class="card" style="text-align:center; color:#0b2942; background:rgba(255,255,255,.14); backdrop-filter: blur(6px);">
-          <h1 class="splash-title logo">🎉 Jogo de Alfabetização</h1>
-          <p class="splash-sub" style="margin-top:8px">Letras, vogais, consoantes e sílabas com narração brasileira.</p>
-          <div class="splash-actions">
-            <button id="btnAtivarAudio" class="btn-good" aria-label="Ativar áudio">🔈 Ativar áudio</button>
+          <h1 class="logo">🎉 Jogo de Alfabetização</h1>
+          <p style="margin-top:8px">Agora com <b>Modo Quiz</b>: múltipla escolha e montar palavras por sílabas.</p>
+          <div class="row" style="margin-top:12px">
+            <button id="btnAtivarAudio">🔈 Ativar áudio</button>
             <button class="btn-outline" id="btnEntrar">Entrar</button>
           </div>
-          <p class="footer" style="margin-top:10px">Dica: alguns navegadores só liberam a voz depois do primeiro clique em “Ativar áudio”.</p>
+          <p style="margin-top:10px;opacity:.8">Dica: alguns navegadores só liberam a voz após um clique.</p>
         </div>
       </div>
     </section>
@@ -135,45 +73,27 @@
     <section id="menu" class="tela">
       <div class="container" style="max-width:980px">
         <div class="card">
-          <h2 style="margin-bottom:10px">Escolha uma fase</h2>
-          <div class="grid cols-2" role="menu" aria-label="Modos de jogo">
-            <button role="menuitem" onclick="iniciarFase('alfabeto')" aria-label="Alfabeto">🔤 Alfabeto</button>
-            <button role="menuitem" onclick="iniciarFase('vogais')" aria-label="Vogais">🅰️ Vogais</button>
-            <button role="menuitem" onclick="iniciarFase('consoantes')" aria-label="Consoantes">🅱️ Consoantes</button>
-            <button role="menuitem" onclick="abrirMenuSilabas()" aria-label="Sílabas">🔡 Sílabas</button>
+          <h2>Escolha um modo</h2>
+          <div class="grid cols-3" role="menu" aria-label="Modos de jogo">
+            <button role="menuitem" onclick="iniciarFase('alfabeto')">🔤 Alfabeto</button>
+            <button role="menuitem" onclick="iniciarFase('vogais')">🅰️ Vogais</button>
+            <button role="menuitem" onclick="iniciarFase('consoantes')">🅱️ Consoantes</button>
+            <button role="menuitem" onclick="abrirMenuSilabas()">🔡 Sílabas</button>
+            <button role="menuitem" onclick="abrirQuiz()">🎯 Quiz</button>
           </div>
         </div>
 
         <div class="card">
-          <h3 style="margin-bottom:10px">Configurações rápidas</h3>
+          <h3>Controles de áudio</h3>
           <div class="row">
-            <label class="toggle" title="Auto-avançar">
-              <input type="checkbox" id="cfgAuto" />
-              <span class="track"><span class="thumb"></span></span>
-              <span>Auto-avançar</span>
-            </label>
-            <label class="toggle" title="Embaralhar ordem">
-              <input type="checkbox" id="cfgShuffle" />
-              <span class="track"><span class="thumb"></span></span>
-              <span>Embaralhar</span>
-            </label>
-            <label class="toggle" title="Áudio mudo">
-              <input type="checkbox" id="cfgMute" />
-              <span class="track"><span class="thumb"></span></span>
-              <span>Mudo</span>
-            </label>
-            <div class="row">
-              <span class="pill">Velocidade</span>
-              <input id="velocidade" type="range" min="0.6" max="1.2" step="0.1" value="0.9" aria-label="Velocidade da fala" />
-              <span id="velocidadeVal" class="muted">0.9x</span>
-            </div>
-            <div class="row">
-              <span class="pill">Voz</span>
-              <select id="vozSelect" aria-label="Escolher voz"></select>
-            </div>
+            <label class="pill">Velocidade</label>
+            <input id="velocidade" type="range" min="0.6" max="1.2" step="0.1" value="0.9" />
+            <span id="velocidadeVal" class="pill" style="background:#eef2f7;color:#334155">0.9x</span>
+            <button class="btn-ghost" id="btnTestVoice">🔊 Testar Voz</button>
           </div>
-          <div class="footer">
-            Atalhos: <span class="kbd">←</span>/<span class="kbd">→</span> anterior/próxima • <span class="kbd">Espaço</span> falar • <span class="kbd">A</span> auto • <span class="kbd">M</span> mudo
+          <div class="row" style="margin-top:6px">
+            <label class="pill">Voz</label>
+            <select id="vozSelect" style="padding:10px 12px; border-radius:10px; border:1px solid #cbd5e1"></select>
           </div>
         </div>
       </div>
@@ -183,80 +103,111 @@
     <section id="menuSilabas" class="tela">
       <div class="container" style="max-width:900px">
         <div class="card">
-          <h2 style="margin-bottom:10px">Escolha a quantidade de sílabas</h2>
-          <div id="listaSilabas" class="grid cols-4"></div>
-          <div class="row" style="margin-top:10px">
-            <button class="btn-ghost" onclick="voltarMenu()">⬅️ Voltar</button>
-          </div>
+          <h2>Quantidade de sílabas</h2>
+          <div id="listaSilabas" class="grid cols-3"></div>
+          <div class="row" style="margin-top:10px"><button class="btn-ghost" onclick="voltarMenu()">⬅️ Voltar</button></div>
         </div>
       </div>
     </section>
 
-    <!-- FASE -->
+    <!-- FASE (ESTUDO) -->
     <section id="fase" class="tela" aria-live="polite">
       <div class="container" style="max-width:980px">
         <div class="card">
-          <div class="fase-title">
+          <div class="row" style="justify-content:space-between">
             <h2 id="tituloFase">—</h2>
-            <div class="pill"><span id="posAtual">0</span>/<span id="posTotal">0</span></div>
+            <div class="row">
+              <div class="stars"><span id="s1" class="star">⭐</span><span id="s2" class="star">⭐</span><span id="s3" class="star">⭐</span></div>
+              <span class="pill" style="margin-left:8px">Pos <span id="posAtual">0</span>/<span id="posTotal">0</span></span>
+            </div>
           </div>
           <div class="progress" style="margin-top:12px"><span id="barraProgresso"></span></div>
         </div>
 
-        <div class="card center" style="gap:10px">
-          <div id="pergunta" class="big" role="heading" aria-level="1">—</div>
+        <div class="card" style="text-align:center">
+          <div id="pergunta" class="big">—</div>
           <div id="subtexto" class="sub">—</div>
         </div>
 
         <div class="card">
-          <div class="controls">
-            <button id="btnAnterior" class="btn-ghost" aria-label="Item anterior">⬅️ Anterior</button>
-            <button id="btnFalar" aria-label="Falar novamente">🔊 Falar</button>
-            <button id="btnPausar" class="btn-outline" aria-label="Pausar fala">⏸️ Pausar</button>
-            <button id="btnProxima" aria-label="Próximo item">➡️ Próxima</button>
+          <div class="row">
+            <button class="btn-ghost" id="btnAnterior">⬅️ Anterior</button>
+            <button id="btnFalar">🔊 Falar</button>
+            <button class="btn-outline" id="btnPausar">⏸️ Pausar</button>
+            <button id="btnProxima">➡️ Próxima</button>
+            <button class="btn-ghost" onclick="voltarMenu()">⬅️ Menu</button>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <div class="row" style="margin-top:10px">
-            <label class="toggle" title="Auto-avançar nesta fase">
-              <input type="checkbox" id="faseAuto" />
-              <span class="track"><span class="thumb"></span></span>
-              <span>Auto-avançar</span>
-            </label>
+    <!-- QUIZ -->
+    <section id="quiz" class="tela">
+      <div class="container" style="max-width:980px">
+        <div class="card">
+          <div class="row" style="justify-content:space-between">
+            <h2>🎯 Modo Quiz</h2>
             <div class="row">
-              <span class="pill">Intervalo</span>
-              <input id="intervalo" type="range" min="1.5" max="6" step="0.5" value="4" aria-label="Intervalo de auto-avançar em segundos" />
-              <span id="intervaloVal" class="muted">4.0s</span>
+              <span class="pill">Pontos: <b id="pontos">0</b></span>
+              <span class="pill">Streak: <b id="streak">0</b></span>
+              <span class="pill">Questão <span id="qAtual">0</span>/<span id="qTotal">0</span></span>
             </div>
-            <label class="toggle" title="Embaralhar nesta fase">
-              <input type="checkbox" id="faseShuffle" />
-              <span class="track"><span class="thumb"></span></span>
-              <span>Embaralhar</span>
-            </label>
-            <button class="btn-ghost" onclick="voltarMenu()">⬅️ Voltar ao menu</button>
+          </div>
+          <div class="progress" style="margin-top:12px"><span id="barraQuiz"></span></div>
+        </div>
+
+        <div class="card" style="text-align:center">
+          <div id="qTexto" class="big">—</div>
+          <div id="qSub" class="sub">—</div>
+        </div>
+
+        <!-- múltipla escolha -->
+        <div id="qOpcoes" class="card" style="display:none">
+          <div class="opcoes" id="opcoes"></div>
+        </div>
+
+        <!-- arrastar e soltar -->
+        <div id="qDnD" class="card" style="display:none">
+          <div class="sub" style="margin-bottom:8px">Arraste as sílabas para completar a palavra:</div>
+          <div id="drop" class="drop" aria-label="Área de montagem"></div>
+          <div class="row" style="margin-top:10px; justify-content:center">
+            <div id="banco" class="drop" aria-label="Sílabas disponíveis"></div>
           </div>
         </div>
 
-        <div id="cronometroArea" class="footer"></div>
+        <div class="card">
+          <div class="row">
+            <button class="btn-ghost" onclick="voltarMenu()">⬅️ Sair do Quiz</button>
+            <button id="btnProxQuiz">➡️ Próxima</button>
+            <button class="btn-outline" id="btnReiniciar">🔁 Reiniciar</button>
+          </div>
+        </div>
+
+        <div class="card" id="resumo" style="display:none; text-align:center">
+          <h3>Resultado</h3>
+          <p class="sub" id="resumoTxt">—</p>
+        </div>
       </div>
     </section>
   </div>
 
+  <!-- confete -->
+  <div id="confetti"></div>
+
   <script>
-    // ========= DADOS =========
+    /* ===== Dados base ===== */
     const pronunciaLetras = {
-      A:"á", B:"bê", C:"cê", D:"dê", E:"é", F:"éfe", G:"gê", H:"agá", I:"i",
-      J:"jóta", K:"cá", L:"éle", M:"ême", N:"êne", O:"ó", P:"pê", Q:"quê",
-      R:"érre", S:"ésse", T:"tê", U:"u", V:"vê", W:"dáblio", X:"xis", Y:"ípsilon", Z:"zê"
+      A:"A", B:"bê", C:"cê", D:"dê", E:"Ê", F:"EFE", G:"gê", H:"agá", I:"i",
+      J:"jóta", K:"cá", L:"éle", M:"ême", N:"N", O:"ó", P:"pê", Q:"quê",
+      R:"érre", S:"S", T:"tê", U:"u", V:"vê", W:"dáblio", X:"xis", Y:"ípsilon", Z:"zê"
     };
     const alfabeto = Array.from({length:26},(_,i)=>String.fromCharCode(65+i));
-    const vogais = ["A","E","I","O","U"];
+    const vogais = ["A","E","I","O","U","ÃO"];
     const consoantes = alfabeto.filter(l=>!vogais.includes(l));
 
-    // Palavras reais divididas em sílabas (revisadas/expandidas)
-    // Obs.: aqui usamos separações didáticas simplificadas para fins de jogo
     const palavrasSilabas = {
       2: [
-        {partes:["BO","LA"], palavra:"BOLA"},
+        {partes:["BÓ","LA"], palavra:"BOLA"},
         {partes:["CA","SA"], palavra:"CASA"},
         {partes:["PA","TO"], palavra:"PATO"},
         {partes:["GA","TO"], palavra:"GATO"},
@@ -265,389 +216,295 @@
       3: [
         {partes:["CA","DEI","RA"], palavra:"CADEIRA"},
         {partes:["JA","NE","LA"], palavra:"JANELA"},
-        {partes:["SO","RVE","TE"], palavra:"SORVETE"},
-        {partes:["PA","PAI","A"], palavra:"PAPAIA"}
+        {partes:["SO","RVE","TE"], palavra:"SORVETE"}
       ],
       4: [
         {partes:["A","MA","RE","LO"], palavra:"AMARELO"},
-        {partes:["MA","CA","CO","ZIN"], palavra:"MACACOZIN"}, // lúdico
         {partes:["TE","LE","VI","SÃO"], palavra:"TELEVISÃO"}
-      ],
-      5: [
-        {partes:["A","VI","A","ÇÃ","O"], palavra:"AVIAÇÃO"},
-        {partes:["MA","RA","VI","LHO","SO"], palavra:"MARAVILHOSO"}
-      ],
-      6: [
-        {partes:["HE","LI","CÓP","TE","RI","NHO"], palavra:"HELICÓPTERINHO"}
       ]
     };
+    const opcoesSilabas = Object.keys(palavrasSilabas).map(n=>+n).sort((a,b)=>a-b);
 
-    // Monta índice dinâmico disponível no menu de sílabas
-    const opcoesSilabas = Object.keys(palavrasSilabas).map(n=>parseInt(n,10)).sort((a,b)=>a-b);
-
-    // ========= ESTADO =========
+    /* ===== Estado global curto (estudo) ===== */
     const state = {
-      fase:"",          // alfabeto | vogais | consoantes | silabas
-      lista:[],         // itens atuais (letras ou palavras)
-      indice:0,
-      qtdSilabas:null,
-      auto:false,
-      shuffle:false,
-      mute:false,
-      velocidade:0.9,
-      intervaloSeg:4,
-      vozURI:null,
-      timer:null,
-      speaking:false
+      fase:"", lista:[], indice:0, qtdSilabas:null,
+      velocidade:0.9, vozURI:null
     };
 
-    // ========= DOM =========
-    const telas = { splash:qs("#splash"), menu:qs("#menu"), menuSilabas:qs("#menuSilabas"), fase:qs("#fase") };
-    const tituloFase = qs("#tituloFase");
-    const pergunta = qs("#pergunta");
-    const subtexto = qs("#subtexto");
-    const posAtual = qs("#posAtual");
-    const posTotal = qs("#posTotal");
-    const barraProgresso = qs("#barraProgresso");
-    const cronometroArea = qs("#cronometroArea");
+    /* ===== DOM ===== */
+    const telas = { splash:qs("#splash"), menu:qs("#menu"), menuSilabas:qs("#menuSilabas"), fase:qs("#fase"), quiz:qs("#quiz") };
+    const tituloFase = qs("#tituloFase"), pergunta = qs("#pergunta"), subtexto = qs("#subtexto");
+    const posAtual = qs("#posAtual"), posTotal = qs("#posTotal"), barraProgresso = qs("#barraProgresso");
 
-    // Controles globais
-    const cfgAuto = qs("#cfgAuto");
-    const cfgShuffle = qs("#cfgShuffle");
-    const cfgMute = qs("#cfgMute");
-    const velocidade = qs("#velocidade");
-    const velocidadeVal = qs("#velocidadeVal");
-    const vozSelect = qs("#vozSelect");
+    // Áudio
+    const velocidade = qs("#velocidade"), velocidadeVal = qs("#velocidadeVal"), vozSelect = qs("#vozSelect");
 
-    // Controles de fase
-    const btnAnterior = qs("#btnAnterior");
-    const btnProxima = qs("#btnProxima");
-    const btnFalar = qs("#btnFalar");
-    const btnPausar = qs("#btnPausar");
-    const faseAuto = qs("#faseAuto");
-    const faseShuffle = qs("#faseShuffle");
-    const intervalo = qs("#intervalo");
-    const intervaloVal = qs("#intervaloVal");
-
-    // Splash
+    // Estudo controles
     qs("#btnEntrar").addEventListener("click", ()=>mostrarTela("menu"));
-    qs("#btnAtivarAudio").addEventListener("click", ()=> {
-      // pequena fala vazia para “desbloquear” TTS em alguns navegadores
-      falar("Áudio ativado", 1.0, true);
-    });
+    qs("#btnAtivarAudio").addEventListener("click", ()=>falar("Áudio ativado", 1.0, true));
+    qs("#btnFalar").addEventListener("click", tocarItemAtual);
+    qs("#btnPausar").addEventListener("click", ()=>speechSynthesis.cancel());
+    qs("#btnAnterior").addEventListener("click", ()=>{ if(state.indice>0){state.indice--; atualizarPainel(); tocarItemAtual();} });
+    qs("#btnProxima").addEventListener("click", ()=>{ if(state.indice<state.lista.length-1){state.indice++; atualizarPainel(); tocarItemAtual();} else fimDeFase(); });
+    velocidade.addEventListener("input", ()=>{ state.velocidade = +velocidade.value; velocidadeVal.textContent = state.velocidade.toFixed(1)+"x"; });
+    qs("#btnTestVoice").addEventListener("click", ()=>falar("Teste de voz em português do Brasil", state.velocidade));
 
-    // ========= INICIALIZAÇÃO =========
+    // Menu sílabas
+    const listaSilabas = qs("#listaSilabas");
     window.addEventListener("load", ()=>{
-      // Preencher menu de sílabas
-      const listaSilabas = qs("#listaSilabas");
       listaSilabas.innerHTML = opcoesSilabas.map(n=>`<button onclick="iniciarSilabas(${n})">${n} sílabas</button>`).join("");
-      // Carregar preferências
-      loadPrefs();
-      atualizarControlesUI();
       popularVozes();
-      // Atalhos
+      velocidadeVal.textContent = Number(velocidade.value).toFixed(1)+"x";
       window.addEventListener("keydown", atalhos);
-      // Se já havia fase salva, opcionalmente poderíamos retomar (aqui mantemos só prefs)
     });
 
-    function mostrarTela(id){
-      document.querySelectorAll(".tela").forEach(t=>t.classList.remove("ativa"));
-      telas[id].classList.add("ativa");
-    }
+    /* ===== Navegação telas ===== */
+    function mostrarTela(id){ Object.values(telas).forEach(t=>t.classList.remove("ativa")); telas[id].classList.add("ativa"); }
+    function voltarMenu(){ mostrarTela("menu"); }
+
     function abrirMenuSilabas(){ mostrarTela("menuSilabas"); }
+    function abrirQuiz(){ iniciarQuiz(); mostrarTela("quiz"); }
 
-    function voltarMenu(){
-      salvarPrefs();
-      stopAuto();
-      speechSynthesis.cancel();
-      mostrarTela("menu");
-    }
-
-    // ========= FASES =========
+    /* ===== Estudo (modo antigo) ===== */
     function iniciarFase(nome){
-      state.fase = nome;
-      state.indice = 0;
-      state.qtdSilabas = null;
-      state.lista = (nome==="alfabeto"? [...alfabeto] :
-                    nome==="vogais" ? [...vogais] :
-                    nome==="consoantes" ? [...consoantes] : []);
-      aplicarShuffleSeMarcado();
-      configurarTitulo();
-      atualizarPainel();
-      mostrarTela("fase");
-      tocarItemAtual();
-      aplicarAutoSeMarcado();
+      state.fase = nome; state.indice=0; state.qtdSilabas=null;
+      state.lista = (nome==="alfabeto"? [...alfabeto] : nome==="vogais"? [...vogais] : nome==="consoantes"? [...consoantes] : []);
+      configurarTitulo(); atualizarPainel(); mostrarTela("fase"); tocarItemAtual();
     }
-
     function iniciarSilabas(qtd){
-      state.fase = "silabas";
-      state.indice = 0;
-      state.qtdSilabas = qtd;
-      state.lista = [...(palavrasSilabas[qtd] || [])];
-      aplicarShuffleSeMarcado();
-      configurarTitulo();
-      atualizarPainel();
-      mostrarTela("fase");
-      tocarItemAtual();
-      aplicarAutoSeMarcado();
+      state.fase="silabas"; state.indice=0; state.qtdSilabas=qtd; state.lista=[...(palavrasSilabas[qtd]||[])];
+      configurarTitulo(); atualizarPainel(); mostrarTela("fase"); tocarItemAtual();
     }
-
     function configurarTitulo(){
-      const t = (state.fase==="alfabeto"?"🔤 Alfabeto":
-                state.fase==="vogais"?"🅰️ Vogais":
-                state.fase==="consoantes"?"🅱️ Consoantes":
-                state.fase==="silabas"?`🔡 ${state.qtdSilabas} sílabas`:"—");
-      tituloFase.textContent = t;
-      posTotal.textContent = state.lista.length;
+      const t = state.fase==="alfabeto"?"🔤 Alfabeto": state.fase==="vogais"?"🅰️ Vogais":
+                state.fase==="consoantes"?"🅱️ Consoantes": `🔡 ${state.qtdSilabas} sílabas`;
+      tituloFase.textContent = t; posTotal.textContent = (state.fase==="silabas"? state.lista.length : state.lista.length);
     }
-
     function atualizarPainel(){
-      const total = state.lista.length||1;
-      const i = state.indice;
+      const total = state.lista.length||1, i=state.indice;
       posAtual.textContent = Math.min(i+1,total);
-      barraProgresso.style.width = `${((i)/total)*100}%`;
-
+      barraProgresso.style.width = `${(i/total)*100}%`;
       if(state.fase==="silabas"){
-        const item = state.lista[i];
-        if(!item){ fimDeFase(); return; }
-        pergunta.textContent = `${item.partes.join(" - ")} = ${item.palavra}`;
-        subtexto.textContent = "Repita comigo!";
+        const item = state.lista[i]; if(!item){return fimDeFase();}
+        pergunta.textContent = `${item.partes.join(" - ")} = ${item.palavra}`; subtexto.textContent="Repita comigo!";
       } else {
-        const letra = state.lista[i];
-        if(!letra){ fimDeFase(); return; }
-        pergunta.textContent = letra;
-        subtexto.textContent = "Repita comigo!";
+        const letra = state.lista[i]; if(!letra){return fimDeFase();}
+        pergunta.textContent = letra; subtexto.textContent="Repita comigo!";
       }
     }
-
     function fimDeFase(){
-      pergunta.textContent = "🎉 Você terminou esta fase!";
-      subtexto.textContent = "";
-      barraProgresso.style.width = "100%";
-      if(!state.mute) falar("Parabéns, você completou a fase!", state.velocidade);
-      stopAuto();
+      pergunta.textContent="🎉 Você terminou esta fase!"; subtexto.textContent=""; barraProgresso.style.width="100%";
+      falar("Parabéns, você completou a fase!", state.velocidade);
     }
-
-    function anterior(){
-      if(state.indice>0){ state.indice--; atualizarPainel(); tocarItemAtual(); }
-    }
-    function proxima(){
-      if(state.indice < state.lista.length-1){ state.indice++; atualizarPainel(); tocarItemAtual(); }
-      else fimDeFase();
-    }
-
-    // ========= FALA =========
-    function falar(texto, velocidade=0.9, force=false){
-      if(state.mute && !force) return;
-      const msg = new SpeechSynthesisUtterance(texto);
-      msg.lang = "pt-BR";
-      msg.rate = Number(velocidade)||0.9;
-      if(state.vozURI){
-        const v = speechSynthesis.getVoices().find(v=>v.voiceURI===state.vozURI);
-        if(v) msg.voice = v;
-      }else{
-        // preferências de vozes pt-BR quando disponíveis
-        const prefer = speechSynthesis.getVoices().find(v=>/pt(-|_)BR/i.test(v.lang));
-        if(prefer) msg.voice = prefer;
-      }
-      speechSynthesis.cancel();
-      state.speaking = true;
-      msg.onend = ()=>{ state.speaking = false; };
-      speechSynthesis.speak(msg);
-    }
-
     function tocarItemAtual(){
       if(state.fase==="silabas"){
-        const item = state.lista[state.indice];
-        if(!item) return;
-        // 1) Letra por letra de cada sílaba
-        let delay = 0;
+        const item = state.lista[state.indice]; if(!item) return;
+        let delay=0;
         item.partes.forEach(parte=>{
           const fala = parte.split("").map(l=>pronunciaLetras[l]||l).join(" e o ");
-          setTimeout(()=>falar(`${fala}, ${parte}`, state.velocidade), delay);
-          delay += 2200;
+          setTimeout(()=>falar(`${fala}, ${parte}`, state.velocidade), delay); delay+=2200;
         });
-        // 2) Sílabas juntas
         setTimeout(()=>falar(item.partes.join(" - "), state.velocidade), delay);
       } else {
-        const letra = state.lista[state.indice];
-        const nome = pronunciaLetras[letra]||letra;
+        const letra = state.lista[state.indice], nome = pronunciaLetras[letra]||letra;
         falar(`letra ${nome}`, state.velocidade);
         setTimeout(()=>falar(`letra ${nome}`, state.velocidade), 1600);
       }
     }
 
-    // ========= AUTO =========
-    function aplicarAutoSeMarcado(){
-      const marcado = faseAuto.checked;
-      if(!marcado){ stopAuto(); return; }
-      startAuto();
+    /* ===== Voz ===== */
+    function falar(texto, velocidade=0.9, force=false){
+      if(!force && document.hidden){} // nada
+      const msg = new SpeechSynthesisUtterance(texto);
+      msg.lang="pt-BR"; msg.rate=Number(velocidade)||0.9;
+      if(state.vozURI){ const v = speechSynthesis.getVoices().find(v=>v.voiceURI===state.vozURI); if(v) msg.voice=v; }
+      else { const prefer = speechSynthesis.getVoices().find(v=>/pt(-|_)BR/i.test(v.lang)); if(prefer) msg.voice=prefer; }
+      speechSynthesis.cancel(); speechSynthesis.speak(msg);
     }
-    function startAuto(){
-      stopAuto();
-      const ms = Number(intervalo.value)*1000;
-      cronometro(ms);
-      state.timer = setInterval(()=>{
-        proxima();
-        cronometro(Number(intervalo.value)*1000);
-      }, ms);
-    }
-    function stopAuto(){
-      if(state.timer){ clearInterval(state.timer); state.timer = null; }
-      cronometroArea.textContent = "";
-    }
-    function cronometro(msTotal){
-      const start = Date.now();
-      function tick(){
-        if(!state.timer) return;
-        const rest = Math.max(0, msTotal - (Date.now()-start));
-        cronometroArea.textContent = `Próximo em ${(rest/1000).toFixed(1)}s...`;
-        if(rest>0) requestAnimationFrame(tick);
-      }
-      tick();
-    }
-
-    // ========= CONTROLES =========
-    btnAnterior.addEventListener("click", anterior);
-    btnProxima.addEventListener("click", proxima);
-    btnFalar.addEventListener("click", ()=>tocarItemAtual());
-    btnPausar.addEventListener("click", ()=>speechSynthesis.cancel());
-
-    faseAuto.addEventListener("change", ()=>{
-      if(faseAuto.checked) startAuto(); else stopAuto();
-      salvarPrefs();
-    });
-    intervalo.addEventListener("input", ()=>{
-      intervaloVal.textContent = `${Number(intervalo.value).toFixed(1)}s`;
-      if(state.timer){ startAuto(); } // reinicia com novo tempo
-      salvarPrefs();
-    });
-    faseShuffle.addEventListener("change", ()=>{
-      aplicarShuffleSeMarcado(true);
-      salvarPrefs();
-    });
-
-    cfgAuto.addEventListener("change", ()=>{ salvarPrefs(); });
-    cfgShuffle.addEventListener("change", ()=>{ salvarPrefs(); });
-    cfgMute.addEventListener("change", ()=>{ state.mute = cfgMute.checked; salvarPrefs(); });
-
-    velocidade.addEventListener("input", ()=>{
-      state.velocidade = Number(velocidade.value);
-      velocidadeVal.textContent = `${state.velocidade.toFixed(1)}x`;
-      salvarPrefs();
-    });
-
-    // ========= SHUFFLE =========
-    function aplicarShuffleSeMarcado(naFase=false){
-      const marcado = naFase ? faseShuffle.checked : (cfgShuffle.checked || faseShuffle.checked);
-      if(!marcado) return;
-      shuffle(state.lista);
-      state.indice = 0;
-    }
-
-    // ========= PREFERÊNCIAS =========
-    function salvarPrefs(){
-      const prefs = {
-        autoGlobal: cfgAuto.checked,
-        shuffleGlobal: cfgShuffle.checked,
-        mute: cfgMute.checked,
-        velocidade: Number(velocidade.value),
-        vozURI: state.vozURI,
-        autoFase: faseAuto.checked,
-        shuffleFase: faseShuffle.checked,
-        intervalo: Number(intervalo.value)
-      };
-      localStorage.setItem("alfabeto_prefs", JSON.stringify(prefs));
-    }
-    function loadPrefs(){
-      try{
-        const prefs = JSON.parse(localStorage.getItem("alfabeto_prefs")||"{}");
-        cfgAuto.checked = !!prefs.autoGlobal;
-        cfgShuffle.checked = !!prefs.shuffleGlobal;
-        cfgMute.checked = !!prefs.mute;
-        velocidade.value = prefs.velocidade ?? 0.9;
-        velocidadeVal.textContent = `${Number(velocidade.value).toFixed(1)}x`;
-        faseAuto.checked = !!prefs.autoFase;
-        faseShuffle.checked = !!prefs.shuffleFase;
-        intervalo.value = prefs.intervalo ?? 4;
-        intervaloVal.textContent = `${Number(intervalo.value).toFixed(1)}s`;
-        state.velocidade = Number(velocidade.value);
-        state.mute = cfgMute.checked;
-        state.vozURI = prefs.vozURI ?? null;
-      }catch{}
-    }
-    function atualizarControlesUI(){
-      // já sincronizados por loadPrefs
-    }
-
-    // ========= VOZES =========
     function popularVozes(){
       function fill(){
         const voices = speechSynthesis.getVoices();
-        vozSelect.innerHTML = "";
-        // Preferir pt-BR no topo
-        const sorted = [...voices].sort((a,b)=>{
-          const ap = /pt(-|_)BR/i.test(a.lang)?-1:1;
-          const bp = /pt(-|_)BR/i.test(b.lang)?-1:1;
-          return ap-bp || a.name.localeCompare(b.name);
-        });
-        sorted.forEach(v=>{
-          const opt = document.createElement("option");
-          opt.value = v.voiceURI;
-          opt.textContent = `${v.name} (${v.lang})`;
-          vozSelect.appendChild(opt);
-        });
-        // selecionar salvo
-        if(state.vozURI){
-          vozSelect.value = state.vozURI;
-        }else{
-          const prefer = sorted.find(v=>/pt(-|_)BR/i.test(v.lang));
-          if(prefer) vozSelect.value = prefer.voiceURI;
-        }
-        // aplicar no estado
+        vozSelect.innerHTML="";
+        const sorted=[...voices].sort((a,b)=>{const ap=/pt(-|_)BR/i.test(a.lang)?-1:1; const bp=/pt(-|_)BR/i.test(b.lang)?-1:1; return ap-bp||a.name.localeCompare(b.name);});
+        sorted.forEach(v=>{const o=document.createElement("option"); o.value=v.voiceURI; o.textContent=`${v.name} (${v.lang})`; vozSelect.appendChild(o);});
+        const prefer = sorted.find(v=>/pt(-|_)BR/i.test(v.lang)); vozSelect.value = prefer?.voiceURI || sorted[0]?.voiceURI || "";
         state.vozURI = vozSelect.value || null;
       }
-      fill();
-      speechSynthesis.onvoiceschanged = fill;
-      vozSelect.addEventListener("change", ()=>{
-        state.vozURI = vozSelect.value || null;
-        salvarPrefs();
+      fill(); speechSynthesis.onvoiceschanged=fill;
+      vozSelect.addEventListener("change", ()=>{ state.vozURI = vozSelect.value || null; });
+    }
+
+    /* ===== Quiz ===== */
+    const QUIZ_TOTAL = 10; // questões por sessão
+
+    const quiz = {
+      perguntas: [], idx: 0, pontos:0, streak:0,
+      elTexto: qs("#qTexto"), elSub: qs("#qSub"), elOpcoes: qs("#qOpcoes"),
+      elDnD: qs("#qDnD"), opcoesBox: qs("#opcoes"), drop: qs("#drop"), banco: qs("#banco"),
+      pontosEl: qs("#pontos"), streakEl: qs("#streak"), qAtual: qs("#qAtual"), qTotal: qs("#qTotal"),
+      barra: qs("#barraQuiz"), resumo: qs("#resumo"), resumoTxt: qs("#resumoTxt")
+    };
+
+    function abrirConfete(){
+      const cont = qs("#confetti");
+      for(let i=0;i<60;i++){
+        const d = document.createElement("div");
+        d.className="c";
+        d.style.left = Math.random()*100+"vw";
+        d.style.top = "-5vh";
+        d.style.background = `hsl(${Math.random()*360},90%,60%)`;
+        d.style.animation = `fall ${1.8+Math.random()*1.4}s linear forwards`;
+        d.style.setProperty('--tx', (Math.random()*40-20)+'vw');
+        cont.appendChild(d);
+        setTimeout(()=>d.remove(), 3500);
+      }
+    }
+
+    function gerarPerguntas(){
+      const tipo1 = alfabeto; // letra certa
+      const tipo2 = Object.values(palavrasSilabas).flat(); // montar palavra
+
+      // Mistura e pega um conjunto equilibrado
+      const perguntas = [];
+      const letrasSh = shuffle([...tipo1]).slice(0, Math.ceil(QUIZ_TOTAL/2));
+      const dndSh = shuffle([...tipo2]).slice(0, Math.floor(QUIZ_TOTAL/2));
+
+      // Cria objetos de questões
+      letrasSh.forEach(L=>{
+        // 3 distratores
+        const pool = shuffle(alfabeto.filter(x=>x!==L)).slice(3);
+        perguntas.push({ tipo:"mc", enunciado:"Qual é a letra mostrada?", alvo:L, opcoes:shuffle([L, ...pool.slice(0,3)]) });
+      });
+
+      dndSh.forEach(item=>{
+        perguntas.push({ tipo:"dnd", enunciado:"Monte a palavra pelas sílabas", alvo:item.palavra, partes:[...item.partes] });
+      });
+
+      return shuffle(perguntas).slice(0, QUIZ_TOTAL);
+    }
+
+    function iniciarQuiz(){
+      quiz.perguntas = gerarPerguntas();
+      quiz.idx=0; quiz.pontos=0; quiz.streak=0;
+      quiz.qTotal.textContent = quiz.perguntas.length;
+      quiz.resumo.style.display="none";
+      atualizarHUDQuiz();
+      mostrarQuestao();
+    }
+
+    function atualizarHUDQuiz(){
+      quiz.pontosEl.textContent = quiz.pontos;
+      quiz.streakEl.textContent = quiz.streak;
+      quiz.qAtual.textContent = Math.min(quiz.idx+1, quiz.perguntas.length);
+      quiz.barra.style.width = `${(quiz.idx/quiz.perguntas.length)*100}%`;
+    }
+
+    function mostrarQuestao(){
+      const q = quiz.perguntas[quiz.idx];
+      quiz.elTexto.textContent = q.enunciado;
+      quiz.elSub.textContent = q.tipo==="mc" ? "Toque na alternativa correta" : "Arraste na ordem correta";
+      quiz.elOpcoes.style.display = q.tipo==="mc" ? "block" : "none";
+      quiz.elDnD.style.display = q.tipo==="dnd" ? "block" : "none";
+      if(q.tipo==="mc") renderMC(q); else renderDnD(q);
+      atualizarHUDQuiz();
+    }
+
+    function renderMC(q){
+      quiz.opcoesBox.innerHTML = "";
+      // Exibe a letra alvo grande
+      quiz.elSub.innerHTML = `Letra: <b style="font-size:1.2em">${q.alvo}</b>`;
+      q.opcoes.forEach(op=>{
+        const b = document.createElement("button");
+        b.className="op"; b.textContent = op;
+        b.onclick = ()=>{
+          if(b.dataset.done) return;
+          const certo = (op===q.alvo);
+          if(certo){
+            b.classList.add("certa"); quiz.pontos+=10; quiz.streak++; falar("Muito bem!", state.velocidade); abrirConfete();
+          } else {
+            b.classList.add("errada"); quiz.streak=0; falar(`A resposta correta é ${q.alvo}`, state.velocidade);
+            // destacar a correta
+            [...quiz.opcoesBox.children].forEach(x=>{ if(x.textContent===q.alvo) x.classList.add("certa"); });
+          }
+          b.dataset.done = "1";
+          // bloquear cliques
+          [...quiz.opcoesBox.children].forEach(x=>x.onclick=null);
+        };
+        quiz.opcoesBox.appendChild(b);
       });
     }
 
-    // ========= ATALHOS =========
+    function renderDnD(q){
+      quiz.drop.innerHTML=""; quiz.banco.innerHTML="";
+      const destino = document.createElement("div");
+      destino.className="drop"; destino.style.minHeight="64px";
+      quiz.drop.appendChild(destino);
+
+      const partes = shuffle([...q.partes]); // banco embaralhado
+      partes.forEach(p=>{
+        const chip = document.createElement("div");
+        chip.className="chip"; chip.textContent=p; chip.draggable=true;
+        chip.addEventListener("dragstart", e=>{ e.dataTransfer.setData("text/plain", p); e.dataTransfer.effectAllowed="move"; chip.classList.add("ghost"); });
+        chip.addEventListener("dragend", ()=>chip.classList.remove("ghost"));
+        quiz.banco.appendChild(chip);
+      });
+
+      // DnD básico
+      ;[destino, quiz.banco].forEach(area=>{
+        area.addEventListener("dragover", e=>{ e.preventDefault(); });
+        area.addEventListener("drop", e=>{
+          e.preventDefault();
+          const texto = e.dataTransfer.getData("text/plain");
+          const passando = [...quiz.banco.children].find(c=>c.textContent===texto);
+          if(passando){ area.appendChild(passando); }
+          checarDnD(q, destino);
+        });
+      });
+    }
+
+    function checarDnD(q, destino){
+      const atual = [...destino.children].map(n=>n.textContent).join("");
+      if(atual.length===q.alvo.length){
+        const correto = (atual===q.partes.join(""));
+        if(correto){
+          quiz.pontos+=15; quiz.streak++; falar(`Palavra ${q.alvo}. Excelente!`, state.velocidade); abrirConfete();
+        } else {
+          quiz.streak=0; falar(`A palavra correta é ${q.alvo}`, state.velocidade);
+        }
+        // trava arrastos
+        [...qsAll(".chip")].forEach(c=>c.draggable=false);
+      }
+    }
+
+    qs("#btnProxQuiz").addEventListener("click", ()=>{
+      if(quiz.idx<quiz.perguntas.length-1){ quiz.idx++; mostrarQuestao(); }
+      else finalizarQuiz();
+    });
+    qs("#btnReiniciar").addEventListener("click", iniciarQuiz);
+
+    function finalizarQuiz(){
+      quiz.barra.style.width="100%";
+      quiz.resumo.style.display="block";
+      quiz.resumoTxt.textContent = `Você fez ${quiz.pontos} pontos com streak máximo ${quiz.streak}.`;
+      falar("Quiz finalizado! Muito bem!", state.velocidade);
+    }
+
+    /* ===== Atalhos ===== */
     function atalhos(e){
       if(e.target.tagName==="INPUT"||e.target.tagName==="SELECT"||e.target.isContentEditable) return;
-      if(e.code==="ArrowLeft"){ anterior(); }
-      if(e.code==="ArrowRight"){ proxima(); }
-      if(e.code==="Space"){ e.preventDefault(); tocarItemAtual(); }
-      if(e.key==="a"||e.key==="A"){ const v=!faseAuto.checked; faseAuto.checked=v; v?startAuto():stopAuto(); salvarPrefs(); }
-      if(e.key==="m"||e.key==="M"){ const v=!cfgMute.checked; cfgMute.checked=v; state.mute=v; salvarPrefs(); }
-    }
-
-    // ========= HELPERS =========
-    function qs(s){ return document.querySelector(s); }
-    function shuffle(arr){
-      for(let i=arr.length-1;i>0;i--){
-        const j = Math.floor(Math.random()*(i+1));
-        [arr[i],arr[j]]=[arr[j],arr[i]];
+      if(e.code==="ArrowLeft"){ if(telas.fase.classList.contains("ativa")) qs("#btnAnterior").click(); }
+      if(e.code==="ArrowRight"){
+        if(telas.fase.classList.contains("ativa")) qs("#btnProxima").click();
+        if(telas.quiz.classList.contains("ativa")) qs("#btnProxQuiz").click();
       }
-      return arr;
+      if(e.code==="Space"){ e.preventDefault(); if(telas.fase.classList.contains("ativa")) tocarItemAtual(); }
+      if(e.key==="r"||e.key==="R"){ if(telas.quiz.classList.contains("ativa")) iniciarQuiz(); }
     }
 
-    // ========= EXTRAS =========
-    // Propaga configs globais sempre que entramos na fase
-    function syncGlobaisParaFase(){
-      faseAuto.checked = cfgAuto.checked;
-      faseShuffle.checked = cfgShuffle.checked;
-    }
-
-    // Substitui mostrarTela de entrada na fase para sincronizar settings
-    const _iniciarFase = iniciarFase;
-    const _iniciarSilabas = iniciarSilabas;
-    iniciarFase = function(nome){ syncGlobaisParaFase(); _iniciarFase(nome); };
-    iniciarSilabas = function(qtd){ syncGlobaisParaFase(); _iniciarSilabas(qtd); };
-
+    /* ===== Utils ===== */
+    function qs(s){ return document.querySelector(s); }
+    function qsAll(s){ return [...document.querySelectorAll(s)]; }
+    function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
   </script>
 </body>
 </html>
